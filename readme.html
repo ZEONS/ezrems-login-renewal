@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ezREMS 로그인 페이지 · README</title>
+  <style>
+    :root{--navy:#102a43;--blue:#1769e0;--ink:#243b53;--muted:#627d98;--line:#d9e2ec;--soft:#f4f7fa;--green:#087f5b;--amber:#9c5b00}*{box-sizing:border-box}body{margin:0;background:#edf3f8;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.7}.hero{padding:58px 24px 78px;color:#fff;background:linear-gradient(135deg,#0a2540,#155eb5)}.hero>div,main{width:min(1080px,calc(100% - 40px));margin:auto}.eyebrow{margin:0 0 8px;color:#acd4ff;font-weight:800;letter-spacing:.08em}.hero h1{margin:0;font-size:clamp(30px,5vw,48px);line-height:1.2}.hero p:last-child{max-width:780px;margin:14px 0 0;color:#dcecff;font-size:17px}main{margin-top:-38px;margin-bottom:60px;padding:clamp(24px,5vw,54px);background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 48px #102a4320}h2{margin:42px 0 12px;padding-bottom:9px;color:var(--navy);border-bottom:2px solid #e8eef5;font-size:24px}h2:first-of-type{margin-top:0}h3{margin:27px 0 8px;color:#174b7a}p{margin:8px 0 14px}ul,ol{padding-left:23px}li{margin:5px 0}.toc{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}.toc a{padding:6px 11px;color:#1557a7;background:#edf5ff;border-radius:999px;text-decoration:none;font-size:14px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:16px 0}.card{padding:17px;background:var(--soft);border:1px solid var(--line);border-radius:11px}.card b{display:block;margin-bottom:4px;color:var(--navy)}table{width:100%;margin:14px 0 22px;border-collapse:collapse;font-size:14px}th,td{padding:11px 13px;border:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--navy);background:#edf4fb}code{padding:.12em .38em;color:#0d4f91;background:#edf5ff;border-radius:5px;font-family:Consolas,monospace}pre{overflow:auto;padding:18px;color:#d9eaff;background:#102a43;border-radius:10px;line-height:1.55}pre code{padding:0;color:inherit;background:none}.flow{padding:18px;color:#16324f;background:#edf6ff;border-left:4px solid var(--blue);border-radius:8px;font-family:Consolas,"Malgun Gothic",monospace;white-space:pre-wrap}.notice{padding:16px 18px;color:#684100;background:#fff8e8;border:1px solid #efd597;border-radius:9px}.ok{padding:16px 18px;color:#075d43;background:#ecfbf5;border:1px solid #a9e2cb;border-radius:9px}footer{margin-top:44px;padding-top:20px;color:var(--muted);border-top:1px solid var(--line);font-size:13px}@media(max-width:700px){main{width:calc(100% - 20px);padding:24px 18px}.cards{grid-template-columns:1fr}table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+  <header class="hero"><div><p class="eyebrow">LOGIN FRONTEND GUIDE · 2026-08-14</p><h1>ezREMS 로그인 페이지</h1><p>Cloudflare의 운영 JSON과 로컬 fallback 자산을 결합한 독립 실행형 ezREMS 로그인 화면 안내서입니다.</p></div></header>
+  <main>
+    <nav class="toc"><a href="#features">기능</a><a href="#structure">구조</a><a href="#content">콘텐츠</a><a href="#assets">자산</a><a href="#deploy">배포</a><a href="#check">점검</a><a href="#trouble">오류 해결</a></nav>
+    <h2 id="features">주요 기능</h2>
+    <div class="cards">
+      <div class="card"><b>마케팅 슬라이드</b>자동 재생, 이전·다음, 일시정지와 다양한 시각 콘텐츠를 지원합니다.</div>
+      <div class="card"><b>긴급공지</b>Cloudflare JSON의 사용 상태와 공지 내용을 로그인 영역에 표시합니다.</div>
+      <div class="card"><b>고객사 레퍼런스</b>원격 로고 흐름과 성과 툴팁, 통계/보고서 링크를 제공합니다.</div>
+      <div class="card"><b>반응형 UI</b>화면 폭에 자동 대응하는 레이아웃, 글꼴 선택과 접근성 보조 기능을 제공합니다.</div>
+    </div>
+    <div class="notice"><b>구현 범위</b><br>현재 로그인과 상담 기능은 UI 목업입니다. 실제 인증 API 호출이나 개인정보 전송은 구현되어 있지 않습니다.</div>
+
+    <h2 id="structure">폴더 구조</h2>
+    <pre><code>login/
+├─ index.html
+├─ readme.md
+├─ readme.html
+├─ js/
+│  ├─ marketing-slides.js
+│  ├─ client-references-fallback.js
+│  └─ emergency-notice-fallback.js
+└─ images/
+   ├─ ezrems_bi.png
+   ├─ ezrems_bi_blue.png
+   ├─ icons/
+   ├─ erp/
+   └─ logos/</code></pre>
+    <p>BI와 화면 아이콘은 로컬 <code>images</code>를 사용합니다. 고객사 로고는 현재 Cloudflare 콘텐츠 주소에서 불러오며, <code>images/logos</code>는 로컬 사본입니다.</p>
+
+    <h2 id="content">Cloudflare 콘텐츠 연동</h2>
+    <pre><code>https://ezrems-login-content-admin.pages.dev/content</code></pre>
+    <table><thead><tr><th>콘텐츠</th><th>파일</th></tr></thead><tbody><tr><td>긴급공지</td><td><code>emergency-notice.json</code></td></tr><tr><td>마케팅 슬라이드</td><td><code>marketing-slides.json</code></td></tr><tr><td>고객사</td><td><code>client-references.json</code></td></tr><tr><td>고객사 로고</td><td><code>images/logos/&lt;파일명&gt;</code></td></tr></tbody></table>
+    <div class="flow">페이지 시작 → JSON 3종을 독립적으로 요청
+정상 응답 → 원격 JSON 표시
+요청 또는 형식 오류 → login/js의 fallback 데이터 표시</div>
+    <p>요청에는 <code>cache: no-store</code>를 사용합니다. 마케팅 슬라이드와 고객사에서 <code>enabled: false</code>인 항목은 화면에서 제외됩니다.</p>
+    <h3>고객사 로고 변환</h3>
+    <pre><code>./content/images/logos/ktestate.png
+↓
+https://ezrems-login-content-admin.pages.dev/content/images/logos/ktestate.png</code></pre>
+    <p>로고 요청이 실패하면 이미지 대신 고객사명이 표시됩니다. 고객사 카드를 가리키거나 키보드로 포커스하면 구축 성과를 보여줍니다.</p>
+
+    <h2 id="assets">로컬 JS와 이미지</h2>
+    <table><thead><tr><th>경로</th><th>역할</th></tr></thead><tbody><tr><td><code>./images/ezrems_bi.png</code></td><td>로그인 화면 BI</td></tr><tr><td><code>./images/icons/trusted-leaders.svg</code></td><td>고객사 영역 아이콘</td></tr><tr><td><code>./images/icons/living-connect-app.svg</code></td><td>리빙 커넥트 아이콘</td></tr><tr><td><code>./js/marketing-slides.js</code></td><td>마케팅 fallback</td></tr><tr><td><code>./js/client-references-fallback.js</code></td><td>고객사 fallback</td></tr><tr><td><code>./js/emergency-notice-fallback.js</code></td><td>공지 fallback</td></tr></tbody></table>
+    <p>Linux 기반 배포 환경에서는 파일명 대소문자를 구분하므로 JSON과 실제 이미지 이름을 정확히 맞춰야 합니다.</p>
+
+    <h2 id="deploy">실행 및 배포</h2>
+    <h3>로컬 실행</h3><pre><code>cd login
+python -m http.server 8080</code></pre><p><code>http://localhost:8080/</code>에서 확인합니다.</p>
+    <h3>Cloudflare Pages</h3>
+    <table><thead><tr><th>설정</th><th>값</th></tr></thead><tbody><tr><td>Framework preset</td><td>None</td></tr><tr><td>Build command</td><td>비워 둠</td></tr><tr><td>Build output directory</td><td><code>login</code></td></tr></tbody></table>
+    <div class="ok">배포 결과에 <code>index.html</code>, <code>js/</code>, <code>images/</code>가 모두 있어야 합니다. JSON은 콘텐츠 관리자 프로젝트에서 원격으로 읽으므로 로그인 프로젝트에 JSON 파일은 필요하지 않습니다.</div>
+
+    <h2 id="check">배포 후 점검</h2>
+    <ol><li>BI와 화면 아이콘 표시</li><li>마케팅 슬라이드 로드와 6초 자동 전환</li><li>Cloudflare 고객사 로고와 성과 툴팁</li><li>긴급공지 상태와 문구</li><li>데스크톱·모바일 화면 폭의 반응형 표시</li><li>고객사 통계/보고서와 외부 링크</li><li>개발자 도구의 404, CORS 및 JSON 오류</li></ol>
+
+    <h2 id="trouble">오류 해결</h2>
+    <table><thead><tr><th>증상</th><th>확인 사항</th></tr></thead><tbody><tr><td>고객사 로고 미표시</td><td>JSON의 <code>logoUrl</code>, Cloudflare <code>/content/images/logos/</code>, 파일명 대소문자</td></tr><tr><td>고객사명만 표시</td><td>로고 요청 실패로 텍스트 fallback이 작동한 상태</td></tr><tr><td>콘텐츠가 예전 내용</td><td>원격 JSON 오류 및 로컬 fallback JS가 표시되는지 확인</td></tr><tr><td>CORS 오류</td><td>콘텐츠 Pages 응답의 <code>Access-Control-Allow-Origin</code> 확인</td></tr><tr><td>BI·아이콘 미표시</td><td><code>images/</code> 배포와 상대 경로 확인</td></tr><tr><td>JS 404</td><td><code>js/</code>가 배포 결과에 포함됐는지 확인</td></tr><tr><td>보고서 링크 오류</td><td>콘텐츠 관리자 프로젝트의 <code>client_report.html</code> 확인</td></tr></tbody></table>
+
+    <h2>유지보수 원칙</h2>
+    <ol><li>운영 콘텐츠는 관리자 페이지의 JSON으로 관리합니다.</li><li>JSON 변경 시 장애 대비용 <code>login/js</code> fallback도 갱신합니다.</li><li>고객사 로고는 콘텐츠 관리자 프로젝트의 <code>content/images/logos</code>에 배포합니다.</li><li>로그인 화면 전용 BI와 아이콘은 <code>login/images</code>에서 관리합니다.</li><li>실서비스 연결 시 목업 로그인 동작을 인증 API로 교체합니다.</li></ol>
+    <footer>분석 대상: login/index.html, login/js/*, login/images/*</footer>
+  </main>
+</body>
+</html>

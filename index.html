@@ -43,49 +43,8 @@
             touch-action: manipulation
         }
 
-        .stagebar {
-            height: 58px;
-            padding: 0 20px;
-            background: #071b34;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 30
-        }
-
-        .stagebar b {
-            font-size: 13px
-        }
-
-        .stagebar span {
-            font-size: 11px;
-            color: #9fb2c8
-        }
-
-        .modes {
-            display: flex;
-            gap: 7px
-        }
-
-        .mode {
-            border: 1px solid #ffffff38;
-            background: #ffffff0c;
-            color: white;
-            border-radius: 8px;
-            padding: 7px 11px;
-            cursor: pointer
-        }
-
-        .mode.active {
-            background: white;
-            color: #0b315c
-        }
-
         .canvas {
-            min-height: calc(100vh - 58px);
+            min-height: 100vh;
             display: grid;
             place-items: center;
             padding: 28px
@@ -763,9 +722,6 @@
                 padding: 38px 22px
             }
 
-            .stagebar {
-                display: none
-            }
         }
 
         @media(prefers-reduced-motion:reduce) {
@@ -1549,11 +1505,6 @@
 </head>
 
 <body>
-    <header class="stagebar">
-        <div><b>ezREMS Login Renewal V4</b> <span>Trust & Speed · Standalone prototype</span></div>
-        <div class="modes"><button class="mode active" data-view="desktop">데스크톱</button><button class="mode"
-                data-view="mobile">모바일</button></div>
-    </header>
     <main class="canvas">
         <section class="viewport" id="viewport">
             <div class="app">
@@ -1707,7 +1658,7 @@
         const viewport = document.querySelector('#viewport'), prevBtn = document.querySelector('#prev'), nextBtn = document.querySelector('#next'), pauseBtn = document.querySelector('#pause'), formEl = document.querySelector('#form'), uidEl = document.querySelector('#uid'), pwEl = document.querySelector('#pw'), uidErr = document.querySelector('#uiderr'), pwErr = document.querySelector('#pwerr'), eyeBtn = document.querySelector('#eye'), loginBtn = document.querySelector('#login'), toastEl = document.querySelector('#toast'); let current = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, timer; function show(n) { if (!slides.length) return; current = (n + slides.length) % slides.length; slides.forEach((s, i) => s.classList.toggle('active', i === current)); dots.forEach((d, i) => d.classList.toggle('active', i === current)); restart() } function restart() { clearInterval(timer); if (playing && slides.length > 1) timer = setInterval(() => show(current + 1), 6000) } prevBtn.onclick = () => show(current - 1); nextBtn.onclick = () => show(current + 1); pauseBtn.onclick = () => { playing = !playing; pauseBtn.textContent = playing ? 'Ⅱ' : '▶'; pauseBtn.setAttribute('aria-label', playing ? '자동 재생 일시정지' : '자동 재생 시작'); restart() };
         const applyChipLayouts = () => { document.querySelectorAll('.chip-list').forEach(list => { list.classList.remove('stacked'); void list.offsetWidth; list.classList.toggle('stacked', list.scrollWidth > list.clientWidth + 1) }) };
         const alignMarketingStart = () => { const slidesBox = document.querySelector('#slides'), loginTitle = document.querySelector('.content h2'); if (!slidesBox || !loginTitle) return; if (viewport.classList.contains('mobile') || innerWidth <= 850) { slidesBox.style.removeProperty('--slide-start'); applyChipLayouts(); return } const offset = Math.max(0, Math.round(loginTitle.getBoundingClientRect().top - slidesBox.getBoundingClientRect().top)); slidesBox.style.setProperty('--slide-start', `${offset}px`); applyChipLayouts() }; requestAnimationFrame(alignMarketingStart); addEventListener('resize', alignMarketingStart); loadMarketingSlides();
-        document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-view]').forEach(x => x.classList.remove('active')); b.classList.add('active'); viewport.classList.toggle('mobile', b.dataset.view === 'mobile'); requestAnimationFrame(alignMarketingStart) }); eyeBtn.onclick = () => { let visible = pwEl.type === 'password'; pwEl.type = visible ? 'text' : 'password'; eyeBtn.textContent = visible ? '◌' : '◉'; eyeBtn.setAttribute('aria-label', visible ? '비밀번호 숨기기' : '비밀번호 표시') }; formEl.onsubmit = e => { e.preventDefault(); let ok = true;[[uidEl, uidErr], [pwEl, pwErr]].forEach(([f, m]) => { let bad = !f.value.trim(); f.classList.toggle('invalid', bad); m.classList.toggle('show', bad); if (bad) ok = false }); if (!ok) return; loginBtn.disabled = true; loginBtn.textContent = '안전하게 확인 중…'; setTimeout(() => { loginBtn.disabled = false; loginBtn.textContent = '로그인'; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 2600) }, 900) };[uidEl, pwEl].forEach((f, i) => f.oninput = () => { f.classList.remove('invalid');[uidErr, pwErr][i].classList.remove('show') }); const modal = document.querySelector('#modal'), closeBtn = document.querySelector('#close'); document.querySelectorAll('.consult,.help').forEach(b => b.onclick = () => { modal.classList.add('show'); closeBtn.focus() }); closeBtn.onclick = () => modal.classList.remove('show'); modal.onclick = e => { if (e.target === modal) modal.classList.remove('show') }; document.onkeydown = e => { if (e.key === 'Escape') modal.classList.remove('show') };
+        eyeBtn.onclick = () => { let visible = pwEl.type === 'password'; pwEl.type = visible ? 'text' : 'password'; eyeBtn.textContent = visible ? '◌' : '◉'; eyeBtn.setAttribute('aria-label', visible ? '비밀번호 숨기기' : '비밀번호 표시') }; formEl.onsubmit = e => { e.preventDefault(); let ok = true;[[uidEl, uidErr], [pwEl, pwErr]].forEach(([f, m]) => { let bad = !f.value.trim(); f.classList.toggle('invalid', bad); m.classList.toggle('show', bad); if (bad) ok = false }); if (!ok) return; loginBtn.disabled = true; loginBtn.textContent = '안전하게 확인 중…'; setTimeout(() => { loginBtn.disabled = false; loginBtn.textContent = '로그인'; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 2600) }, 900) };[uidEl, pwEl].forEach((f, i) => f.oninput = () => { f.classList.remove('invalid');[uidErr, pwErr][i].classList.remove('show') }); const modal = document.querySelector('#modal'), closeBtn = document.querySelector('#close'); document.querySelectorAll('.consult,.help').forEach(b => b.onclick = () => { modal.classList.add('show'); closeBtn.focus() }); closeBtn.onclick = () => modal.classList.remove('show'); modal.onclick = e => { if (e.target === modal) modal.classList.remove('show') }; document.onkeydown = e => { if (e.key === 'Escape') modal.classList.remove('show') };
     </script>
     <script>
         const fontOptions = { pretendard: { label: 'Pretendard', stack: 'Pretendard,"Noto Sans KR",system-ui,sans-serif' }, noto: { label: 'Noto Sans KR', stack: '"Noto Sans KR",Pretendard,system-ui,sans-serif' }, suit: { label: 'SUIT', stack: 'SUIT,Pretendard,"Noto Sans KR",system-ui,sans-serif' }, spoqa: { label: 'Spoqa Han Sans Neo', stack: '"Spoqa Han Sans Neo",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, ibm: { label: 'IBM Plex Sans KR', stack: '"IBM Plex Sans KR",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, system: { label: '시스템 기본', stack: 'system-ui,"Malgun Gothic",sans-serif' } };
