@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">리빙 커넥트 모바일 앱</title>
+  <rect x="13" y="5" width="22" height="38" rx="5" fill="none" stroke="#0c70c9" stroke-width="3"/>
+  <path d="M21 11h6" stroke="#0c70c9" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="24" cy="37" r="1.8" fill="#0c70c9"/>
+</svg>

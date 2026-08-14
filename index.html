@@ -1,0 +1,1725 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ezREMS Login Renewal V4 · Standalone</title>
+    <style>
+        :root {
+            --blue: #0c4da2;
+            --deep: #082f68;
+            --navy: #071b34;
+            --red: #ef292d;
+            --ink: #172033;
+            --muted: #68758a;
+            --line: #dfe5ec;
+            --soft: #f3f6fa;
+            --white: #fff;
+            --ok: #087d61;
+            --shadow: 0 24px 70px rgba(8, 38, 77, .16)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+            color: var(--ink);
+            background: #dbe3ec
+        }
+
+        button,
+        input {
+            font: inherit
+        }
+
+        button,
+        a {
+            touch-action: manipulation
+        }
+
+        .stagebar {
+            height: 58px;
+            padding: 0 20px;
+            background: #071b34;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 30
+        }
+
+        .stagebar b {
+            font-size: 13px
+        }
+
+        .stagebar span {
+            font-size: 11px;
+            color: #9fb2c8
+        }
+
+        .modes {
+            display: flex;
+            gap: 7px
+        }
+
+        .mode {
+            border: 1px solid #ffffff38;
+            background: #ffffff0c;
+            color: white;
+            border-radius: 8px;
+            padding: 7px 11px;
+            cursor: pointer
+        }
+
+        .mode.active {
+            background: white;
+            color: #0b315c
+        }
+
+        .canvas {
+            min-height: calc(100vh - 58px);
+            display: grid;
+            place-items: center;
+            padding: 28px
+        }
+
+        .viewport {
+            width: min(1440px, 100%);
+            height: min(900px, calc(100vh - 114px));
+            min-height: 720px;
+            background: white;
+            box-shadow: var(--shadow);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: .35s
+        }
+
+        .viewport.mobile {
+            width: 390px;
+            height: 820px;
+            min-height: 0;
+            overflow: auto
+        }
+
+        .app {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 40% 60%;
+            background: white
+        }
+
+        .marketing {
+            position: relative;
+            overflow: hidden;
+            color: white;
+            background: linear-gradient(145deg, #0c4da2, #082e68 60%, #061d43);
+            padding: 46px clamp(28px, 4vw, 62px);
+            display: flex;
+            flex-direction: column
+        }
+
+        .marketing:before,
+        .marketing:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: #ffffff0b
+        }
+
+        .marketing:before {
+            width: 420px;
+            height: 420px;
+            right: -180px;
+            top: -140px
+        }
+
+        .marketing:after {
+            width: 310px;
+            height: 310px;
+            left: -150px;
+            bottom: -130px
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2
+        }
+
+        .wordmark {
+            font-size: 29px;
+            font-weight: 950;
+            font-style: italic;
+            letter-spacing: -3px
+        }
+
+        .wordmark i {
+            font-style: normal;
+            color: #ff3c40
+        }
+
+        .logo small {
+            border-left: 1px solid #ffffff55;
+            padding-left: 12px;
+            color: #c8d9ed;
+            font-size: 10px;
+            line-height: 1.4
+        }
+
+        .slides {
+            flex: 1;
+            position: relative;
+            z-index: 2
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(25px);
+            pointer-events: none;
+            transition: .6s ease
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: none;
+            pointer-events: auto
+        }
+
+        .kicker {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .16em;
+            color: #8ed4ff;
+            margin-bottom: 18px
+        }
+
+        .slide h1 {
+            font-size: clamp(34px, 3.25vw, 58px);
+            line-height: 1.18;
+            letter-spacing: -.05em;
+            margin: 0 0 24px;
+            word-break: keep-all
+        }
+
+        .slide p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #d5e4f5;
+            max-width: 530px;
+            word-break: keep-all
+        }
+
+        .visual {
+            margin-top: 34px;
+            display: flex;
+            gap: 10px
+        }
+
+        .chip {
+            padding: 10px 13px;
+            border: 1px solid #ffffff33;
+            background: #ffffff10;
+            border-radius: 11px;
+            font-size: 11px
+        }
+
+        .metric {
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -.04em
+        }
+
+        .metric small {
+            font-size: 12px;
+            font-weight: 500;
+            color: #afd2f6;
+            margin-left: 6px
+        }
+
+        .chart {
+            height: 62px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px
+        }
+
+        .chart i {
+            display: block;
+            width: 17px;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(#62c7ff, #fff);
+            opacity: .9
+        }
+
+        .controls {
+            position: relative;
+            z-index: 4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .dots {
+            display: flex;
+            gap: 7px
+        }
+
+        .dot {
+            width: 22px;
+            height: 4px;
+            border: 0;
+            padding: 0;
+            border-radius: 5px;
+            background: #ffffff45;
+            cursor: pointer;
+            transition: .3s
+        }
+
+        .dot.active {
+            width: 42px;
+            background: #fff
+        }
+
+        .arrows {
+            display: flex;
+            gap: 8px
+        }
+
+        .circle {
+            width: 38px;
+            height: 38px;
+            border: 1px solid #ffffff42;
+            background: #ffffff0b;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer
+        }
+
+        .pause {
+            width: auto;
+            border-radius: 20px;
+            padding: 0 13px
+        }
+
+        .access {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0
+        }
+
+        .utility {
+            height: 70px;
+            padding: 0 clamp(28px, 5vw, 70px);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 22px;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .utility a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        .accessmain {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            padding: 10px 34px 20px;
+            overflow: auto
+        }
+
+        .content {
+            width: min(470px, 100%)
+        }
+
+        .content h2 {
+            font-size: 32px;
+            letter-spacing: -.04em;
+            margin: 0 0 8px
+        }
+
+        .intro {
+            color: var(--muted);
+            font-size: 14px;
+            margin: 0 0 25px
+        }
+
+        .field {
+            position: relative;
+            margin-bottom: 14px
+        }
+
+        .field input {
+            width: 100%;
+            height: 60px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 22px 48px 8px 15px;
+            color: var(--ink);
+            outline: none;
+            background: white;
+            transition: .2s
+        }
+
+        .field label {
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            color: #8490a2;
+            font-size: 14px;
+            pointer-events: none;
+            transition: .18s
+        }
+
+        .field input:focus,
+        .field input:not(:placeholder-shown) {
+            border-color: #7da7d8
+        }
+
+        .field input:focus+label,
+        .field input:not(:placeholder-shown)+label {
+            top: 8px;
+            font-size: 10px;
+            color: var(--blue);
+            font-weight: 700
+        }
+
+        .field input.invalid {
+            border-color: #d92832
+        }
+
+        .eye {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            width: 38px;
+            height: 38px;
+            border: 0;
+            background: transparent;
+            color: #607086;
+            cursor: pointer;
+            border-radius: 8px
+        }
+
+        .eye:hover {
+            background: var(--soft)
+        }
+
+        .error {
+            display: none;
+            color: #c9232c;
+            font-size: 11px;
+            margin: -7px 0 12px 4px
+        }
+
+        .error.show {
+            display: block
+        }
+
+        .checks {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 18px 0;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .checks label {
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .checks input {
+            accent-color: var(--blue);
+            width: 15px;
+            height: 15px
+        }
+
+        .loginbtn,
+        .ctabtn {
+            width: 100%;
+            height: 54px;
+            border: 0;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .loginbtn {
+            background: var(--blue);
+            color: white;
+            box-shadow: 0 9px 22px #0c4da22e
+        }
+
+        .loginbtn:hover {
+            background: var(--deep);
+            transform: translateY(-1px)
+        }
+
+        .loginbtn:disabled {
+            opacity: .7
+        }
+
+        .recover {
+            text-align: center;
+            margin: 16px 0 22px;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .recover button {
+            border: 0;
+            background: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0 9px
+        }
+
+        .recover button+button {
+            border-left: 1px solid var(--line)
+        }
+
+        .cta {
+            border: 1px solid #cbdced;
+            background: linear-gradient(135deg, #f5f9fe, #eef5fc);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px
+        }
+
+        .cta p {
+            margin: 0
+        }
+
+        .cta b {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px
+        }
+
+        .cta span {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .ctabtn {
+            width: auto;
+            height: 42px;
+            padding: 0 17px;
+            background: white;
+            border: 1px solid var(--blue);
+            color: var(--blue);
+            white-space: nowrap
+        }
+
+        .ctabtn:hover {
+            background: var(--blue);
+            color: white
+        }
+
+        .appzone {
+            margin-top: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 11px
+        }
+
+        .stores {
+            display: flex;
+            gap: 6px
+        }
+
+        .store {
+            border: 1px solid var(--line);
+            background: white;
+            border-radius: 7px;
+            padding: 7px 9px;
+            color: var(--ink);
+            font-size: 10px
+        }
+
+        .footer {
+            height: 48px;
+            padding: 0 clamp(28px, 5vw, 70px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--line);
+            font-size: 10px;
+            color: #8a95a5
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: none;
+            margin-right: 14px
+        }
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 24px;
+            padding: 13px 17px;
+            background: #083f34;
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(80px);
+            transition: .3s;
+            z-index: 60
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: none
+        }
+
+        .modalback {
+            position: fixed;
+            inset: 0;
+            background: #071b34b3;
+            display: none;
+            place-items: center;
+            padding: 20px;
+            z-index: 70
+        }
+
+        .modalback.show {
+            display: grid
+        }
+
+        .modal {
+            width: min(430px, 100%);
+            background: white;
+            border-radius: 17px;
+            padding: 26px;
+            box-shadow: var(--shadow)
+        }
+
+        .modal .kicker {
+            color: var(--blue);
+            margin-bottom: 8px
+        }
+
+        .modal h3 {
+            margin: 0 0 10px;
+            font-size: 23px
+        }
+
+        .modal p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65
+        }
+
+        .modalnote {
+            padding: 11px;
+            background: var(--soft);
+            border-radius: 9px;
+            font-size: 11px !important
+        }
+
+        .modal button {
+            width: 100%;
+            height: 44px;
+            border: 0;
+            border-radius: 9px;
+            background: var(--blue);
+            color: white;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .mobile .app {
+            display: block;
+            height: auto;
+            min-height: 100%
+        }
+
+        .mobile .marketing {
+            min-height: 240px;
+            padding: 28px 24px
+        }
+
+        .mobile .slides {
+            min-height: 125px
+        }
+
+        .mobile .slide {
+            justify-content: flex-end
+        }
+
+        .mobile .slide h1 {
+            font-size: 25px;
+            margin: 0 0 8px
+        }
+
+        .mobile .slide p,
+        .mobile .visual {
+            display: none
+        }
+
+        .mobile .controls {
+            margin-top: 15px
+        }
+
+        .mobile .utility {
+            display: none
+        }
+
+        .mobile .accessmain {
+            display: block;
+            padding: 28px 22px
+        }
+
+        .mobile .content h2 {
+            font-size: 26px
+        }
+
+        .mobile .footer {
+            padding: 0 22px
+        }
+
+        .mobile .footer>span {
+            display: none
+        }
+
+        .mobile .cta {
+            display: block
+        }
+
+        .mobile .ctabtn {
+            width: 100%;
+            margin-top: 12px
+        }
+
+        .mobile .appzone {
+            align-items: flex-start;
+            gap: 10px
+        }
+
+        .mobile .checks {
+            flex-wrap: wrap
+        }
+
+        @media(max-width:850px) {
+            .canvas {
+                padding: 0
+            }
+
+            .viewport {
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+                border-radius: 0
+            }
+
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .marketing {
+                min-height: 270px
+            }
+
+            .slide h1 {
+                font-size: 30px
+            }
+
+            .slide p,
+            .visual {
+                display: none
+            }
+
+            .accessmain {
+                padding: 38px 22px
+            }
+
+            .stagebar {
+                display: none
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                scroll-behavior: auto !important;
+                transition: none !important
+            }
+
+            .slide {
+                transform: none
+            }
+        }
+
+        /* 좌측 category · eyebrow를 우측 로그인 제목과 같은 높이에 정렬 */
+        .slides {
+            --slide-start: 12px
+        }
+
+        .slide {
+            justify-content: flex-start;
+            padding-top: var(--slide-start)
+        }
+
+        .kicker {
+            flex: 0 0 auto;
+            margin-bottom: 14px;
+            font-size: 10px;
+            line-height: 1.4
+        }
+
+        .slide h1 {
+            font-size: clamp(30px, 2.65vw, 44px);
+            line-height: 1.16;
+            margin-bottom: 18px
+        }
+
+        .slide p {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 6;
+            font-size: 13px;
+            line-height: 1.62;
+            max-height: 8.1em;
+            margin: 0
+        }
+
+        .visual {
+            margin-top: 20px
+        }
+
+        .visual .chip {
+            flex: 0 0 auto;
+            white-space: nowrap
+        }
+
+        .ezrems_bi_logo {
+            display: block;
+            width: auto;
+            height: 35px;
+            object-fit: contain
+        }
+
+        .logo small {
+            white-space: nowrap
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .font-picker {
+            position: relative
+        }
+
+        .font-button {
+            height: 30px;
+            padding: 0 10px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: white;
+            color: var(--muted);
+            font-size: 10px;
+            cursor: pointer
+        }
+
+        .font-button:hover,
+        .font-button[aria-expanded="true"] {
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .font-menu {
+            position: absolute;
+            right: 0;
+            bottom: 38px;
+            width: 210px;
+            margin: 0;
+            padding: 6px;
+            list-style: none;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: white;
+            box-shadow: 0 14px 36px #102c4c26;
+            display: none;
+            z-index: 80
+        }
+
+        .font-menu.show {
+            display: block
+        }
+
+        .font-menu button {
+            width: 100%;
+            padding: 9px 10px;
+            border: 0;
+            border-radius: 7px;
+            background: white;
+            color: var(--ink);
+            text-align: left;
+            font-size: 12px;
+            cursor: pointer
+        }
+
+        .font-menu button:hover,
+        .font-menu button.active {
+            background: var(--soft);
+            color: var(--blue);
+            font-weight: 700
+        }
+
+        .font-menu small {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 400
+        }
+
+        :root {
+            --ui-font: Pretendard, "Noto Sans KR", system-ui, sans-serif
+        }
+
+        html,
+        body {
+            font-family: var(--ui-font)
+        }
+
+        .visual.stacked {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 7px
+        }
+
+        .visual.stacked .chip {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.45
+        }
+
+        .client-references {
+            display: none;
+            position: relative;
+            z-index: 5;
+            margin: 17px calc(clamp(28px, 4vw, 62px) * -1) -16px;
+            padding: 12px 0 0;
+            border-top: 1px solid #ffffff24;
+            overflow: hidden
+        }
+
+        .version4 .client-references {
+            display: block
+        }
+
+        .references-label {
+            padding: 0 clamp(28px, 4vw, 62px) 9px;
+            color: #9dc7ee;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .15em
+        }
+
+        .marquee {
+            overflow: hidden;
+            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: clientRoll 28s linear infinite
+        }
+
+        .marquee:hover .marquee-track,
+        .marquee:focus-within .marquee-track {
+            animation-play-state: paused
+        }
+
+        .marquee-group {
+            display: flex;
+            gap: 9px;
+            padding-right: 9px
+        }
+
+        .client-card {
+            width: 220px;
+            height: 55px;
+            padding: 9px 11px;
+            border: 1px solid #ffffff26;
+            border-radius: 10px;
+            background: #ffffff0c;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none
+        }
+
+        .client-logo {
+            width: 38px;
+            height: 30px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: .9
+        }
+
+        .client-logo-fallback {
+            display: none;
+            width: 38px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #fff
+        }
+
+        .client-copy {
+            min-width: 0
+        }
+
+        .client-copy b,
+        .client-copy span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .client-copy b {
+            font-size: 11px
+        }
+
+        .client-copy span {
+            margin-top: 3px;
+            color: #bcd3eb;
+            font-size: 8px
+        }
+
+        @keyframes clientRoll {
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        .version4 {
+            grid-template-columns: 50% 50%
+        }
+
+        .version4 .marketing {
+            padding-bottom: 30px
+        }
+
+        .version4 .content {
+            width: min(470px, 100%)
+        }
+
+        .version4 .slide h1 {
+            font-size: clamp(31px, 2.8vw, 48px)
+        }
+
+        .mobile .slides {
+            --slide-start: 28px
+        }
+
+        .mobile .slide {
+            justify-content: flex-start
+        }
+
+        .mobile .slide h1 {
+            font-size: 25px
+        }
+
+        @media(max-width:850px) {
+            .slides {
+                --slide-start: 32px
+            }
+
+            .slide {
+                justify-content: flex-start
+            }
+
+            .slide h1 {
+                font-size: 28px
+            }
+        }
+
+        @media(max-width:850px) {
+            .version4 {
+                display: block
+            }
+
+            .version4 .client-references {
+                display: none
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            .marquee-track {
+                animation: none
+            }
+        }
+
+        .client-card {
+            width: 235px;
+            height: 62px
+        }
+
+        .references-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 clamp(28px, 4vw, 62px) 9px
+        }
+
+        .references-header .references-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0
+        }
+
+        .references-text-link {
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0;
+            text-decoration: underline;
+            text-decoration-color: #ffffff70;
+            text-underline-offset: 3px;
+            white-space: nowrap
+        }
+
+        .references-text-link:hover,
+        .references-text-link:focus {
+            color: #bfe2ff;
+            text-decoration-color: currentColor
+        }
+
+        .utility .font-menu {
+            top: 38px;
+            bottom: auto
+        }
+
+        .utility .font-button {
+            height: 29px
+        }
+
+        .living-link {
+            color: var(--ink);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .living-app-icon {
+            position: relative;
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: transparent;
+            box-shadow: 0 0 0 0 #2aaee05c, 0 5px 14px #0c4da226;
+            animation: livingAppPulse 2.5s ease-out infinite
+        }
+
+        .living-app-icon:before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #37b8eb73;
+            border-radius: 14px;
+            animation: livingAppOrbit 2.5s ease-in-out infinite
+        }
+
+        .living-app-icon img {
+            position: relative;
+            z-index: 1;
+            width: 30px;
+            height: 30px;
+            display: block
+        }
+
+        .living-copy {
+            display: block;
+            line-height: 1.5
+        }
+
+        @keyframes livingAppPulse {
+            0%, 42% { box-shadow: 0 0 0 0 #2aaee05c, 0 5px 14px #0c4da226 }
+            78%, 100% { box-shadow: 0 0 0 9px #2aaee000, 0 5px 14px #0c4da226 }
+        }
+
+        @keyframes livingAppOrbit {
+            0%, 100% { transform: scale(.94); opacity: .3 }
+            50% { transform: scale(1.05); opacity: .85 }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            .living-app-icon,
+            .living-app-icon:before { animation: none }
+        }
+
+        .living-link:hover b,
+        .living-link:focus b {
+            color: var(--blue)
+        }
+
+        .store {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .store:hover,
+        .store:focus {
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .references-title {
+            display: flex;
+            align-items: center;
+            gap: 9px
+        }
+
+        .trust-icon {
+            position: relative;
+            flex: 0 0 auto;
+            width: 25px;
+            height: 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 0 0 #7dd3ff80, 0 5px 14px #031a3760;
+            animation: trustPulse 2.4s ease-out infinite
+        }
+
+        .trust-icon:before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #9cddff99;
+            border-radius: 50%;
+            opacity: .65;
+            animation: trustOrbit 2.4s ease-in-out infinite
+        }
+
+        .trust-icon img {
+            position: relative;
+            z-index: 1;
+            width: 23px;
+            height: 23px;
+            display: block
+        }
+
+        @keyframes trustPulse {
+
+            0%,
+            42% {
+                box-shadow: 0 0 0 0 #7dd3ff80, 0 5px 14px #031a3760
+            }
+
+            78%,
+            100% {
+                box-shadow: 0 0 0 10px #7dd3ff00, 0 5px 14px #031a3760
+            }
+        }
+
+        @keyframes trustOrbit {
+
+            0%,
+            100% {
+                transform: scale(.9);
+                opacity: .25
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: .85
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .trust-icon,
+            .trust-icon:before {
+                animation: none
+            }
+        }
+
+        .client-references .references-header {
+            padding: 9px clamp(28px, 4vw, 62px) 0
+        }
+
+        .has-tooltip {
+            position: relative
+        }
+
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 11px);
+            z-index: 100;
+            max-width: 260px;
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: rgba(15, 23, 42, .94);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1.45;
+            white-space: nowrap;
+            box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .26);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(6px);
+            transition: opacity .2s ease, visibility .2s ease, transform .2s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .has-tooltip::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 5px);
+            z-index: 101;
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: rgba(15, 23, 42, .94) transparent transparent;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(6px);
+            transition: opacity .2s ease, visibility .2s ease, transform .2s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .has-tooltip:hover::after,
+        .has-tooltip:hover::before,
+        .has-tooltip:focus-visible::after,
+        .has-tooltip:focus-visible::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0)
+        }
+
+        .tooltip-bottom::after {
+            top: calc(100% + 11px);
+            bottom: auto
+        }
+
+        .tooltip-bottom::before {
+            top: calc(100% + 5px);
+            bottom: auto;
+            border-width: 0 6px 6px;
+            border-color: transparent transparent rgba(15, 23, 42, .94)
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            .has-tooltip::after,
+            .has-tooltip::before {
+                transition: none
+            }
+        }
+
+        .emergency-test {
+            padding: 7px 10px;
+            border: 1px solid #e3b5b8;
+            border-radius: 8px;
+            background: #fff8f8;
+            color: #c32730;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .emergency-test[aria-expanded="true"] {
+            background: #c32730;
+            color: #fff
+        }
+
+        .emergency {
+            position: relative;
+            margin: 0 0 17px;
+            padding: 13px 38px 13px 39px;
+            border: 1px solid #efc2c4;
+            border-radius: 11px;
+            background: #fff5f5;
+            color: #713338
+        }
+
+        .emergency[hidden] {
+            display: none
+        }
+
+        .emergency-icon {
+            position: absolute;
+            left: 13px;
+            top: 13px;
+            width: 17px;
+            height: 17px;
+            color: #d22d35
+        }
+
+        .emergency b {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #a51f27
+        }
+
+        .emergency p {
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.55
+        }
+
+        .emergency-close {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 27px;
+            height: 27px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: #8d5a5d;
+            cursor: pointer
+        }
+
+        .emergency-close:hover {
+            background: #f6dfe0
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center
+        }
+
+        .sns-links {
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .sns-link {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            display: grid;
+            place-items: center;
+            color: #77869a;
+            background: #fff
+        }
+
+        .sns-link:hover,
+        .sns-link:focus {
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .sns-link svg {
+            width: 14px;
+            height: 14px
+        }
+
+        .mobile .footer-left {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .client-floating-tooltip {
+            position: fixed;
+            z-index: 200;
+            max-width: 310px;
+            padding: 9px 13px;
+            border-radius: 7px;
+            background: rgba(15, 23, 42, .96);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1.5;
+            box-shadow: 0 12px 22px -5px rgba(0, 0, 0, .32);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translate(-50%, 6px);
+            transition: opacity .2s ease, visibility .2s ease, transform .2s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .client-floating-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0)
+        }
+
+        .client-floating-tooltip:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -6px;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: rgba(15, 23, 42, .96) transparent transparent
+        }
+
+        .client-floating-tooltip.below:after {
+            top: -6px;
+            bottom: auto;
+            border-width: 0 6px 6px;
+            border-color: transparent transparent rgba(15, 23, 42, .96)
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            .client-floating-tooltip {
+                transition: none
+            }
+        }
+
+        .client-card .client-logo {
+            display: block;
+            flex: 0 0 38px;
+            width: 38px;
+            height: 30px;
+            margin: auto 0;
+            object-fit: contain;
+            object-position: center center
+        }
+
+        .client-card .client-logo.is-square {
+            width: 30px;
+            height: 30px;
+            flex: 0 0 38px;
+            margin: 0;
+            align-self: center;
+            object-fit: contain;
+            object-position: center center
+        }
+    </style>
+</head>
+
+<body>
+    <header class="stagebar">
+        <div><b>ezREMS Login Renewal V4</b> <span>Trust & Speed · Standalone prototype</span></div>
+        <div class="modes"><button class="mode active" data-view="desktop">데스크톱</button><button class="mode"
+                data-view="mobile">모바일</button></div>
+    </header>
+    <main class="canvas">
+        <section class="viewport" id="viewport">
+            <div class="app">
+                <aside class="marketing" aria-label="이지램스 주요 가치">
+                    <div class="logo"><img class="ezrems_bi_logo" src="./images/ezrems_bi.png"
+                            alt="ezREMS"><small>유·무형,모든 공간의 임대운영관리 서비스 플랫폼</small></div>
+                    <div class="slides" id="slides" aria-live="polite"></div>
+                    <div class="controls">
+                        <div class="dots" id="dots"></div>
+                        <div class="arrows"><button class="circle has-tooltip" id="prev" aria-label="이전 슬라이드"
+                                data-tooltip="이전 메시지">←</button><button class="circle pause has-tooltip" id="pause"
+                                aria-label="자동 재생 일시정지" data-tooltip="슬라이드 자동 재생을 멈춥니다.">Ⅱ</button><button
+                                class="circle has-tooltip" id="next" aria-label="다음 슬라이드"
+                                data-tooltip="다음 메시지">→</button></div>
+                    </div>
+                    <section class="client-references" id="clientReferences" aria-label="이지램스 고객사">
+                        <div class="marquee">
+                            <div class="marquee-track" id="clientTrack"></div>
+                        </div>
+                        <div class="references-header">
+                            <div class="references-title"><span class="trust-icon" aria-hidden="true"><img
+                                        src="./images/icons/trusted-leaders.svg" alt=""></span>
+                                <div class="references-label"><span>업계 선두주자들이 함께하고 있습니다.</span><a
+                                        class="references-text-link" href="https://ezrems-login-content-admin.pages.dev/client_report.html"
+                                        target="_blank" rel="noopener noreferrer">전체 성공 사례 보기 →</a></div>
+                            </div>
+                        </div>
+                    </section>
+                </aside>
+                <section class="access">
+                    <nav class="utility"><button class="emergency-test has-tooltip tooltip-bottom" id="emergencyTest"
+                            type="button" aria-expanded="false" aria-controls="emergencyNotice"
+                            data-tooltip="긴급 공지 표시 상태를 테스트합니다.">긴급공지 테스트</button>
+                        <div class="font-picker"><button class="font-button has-tooltip tooltip-bottom" id="fontButton"
+                                type="button" aria-expanded="false" aria-controls="fontMenu"
+                                data-tooltip="화면에 적용할 한글 글꼴을 선택합니다.">가Aa 글꼴 · Pretendard</button>
+                            <ul class="font-menu" id="fontMenu" aria-label="한글 글꼴 선택">
+                                <li><button type="button" data-font="pretendard">Pretendard<small>균형 잡힌 현대적 UI ·
+                                            추천</small></button></li>
+                                <li><button type="button" data-font="noto">Noto Sans KR<small>명확하고 안정적인 화면
+                                            가독성</small></button></li>
+                                <li><button type="button" data-font="suit">SUIT<small>숫자와 한글이 선명한 업무용
+                                            서체</small></button></li>
+                                <li><button type="button" data-font="spoqa">Spoqa Han Sans Neo<small>작은 본문에 강한 친근한
+                                            서체</small></button></li>
+                                <li><button type="button" data-font="ibm">IBM Plex Sans KR<small>전문적이고 구조적인
+                                            인상</small></button></li>
+                                <li><button type="button" data-font="system">시스템 기본 글꼴<small>기기 환경에 최적화된 기본
+                                            서체</small></button></li>
+                            </ul>
+                        </div><a class="has-tooltip tooltip-bottom" href="#" data-tooltip="로그인 및 서비스 이용 문의">고객센터
+                            02-0000-0000</a><a class="has-tooltip tooltip-bottom" href="#"
+                            data-tooltip="이지램스 서비스 소개를 확인합니다.">서비스 소개 ↗</a>
+                    </nav>
+                    <div class="accessmain">
+                        <div class="content">
+                            <h2>로그인</h2>
+                            <p class="intro">자산 운영의 모든 흐름을 하나의 플랫폼에서 관리하세요.</p>
+                            <aside class="emergency" id="emergencyNotice" role="alert" hidden><svg
+                                    class="emergency-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M12 3 2.5 20h19L12 3Z" stroke="currentColor" stroke-width="2" />
+                                    <path d="M12 9v5m0 3h.01" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg><b id="emergencyTitle">긴급 공지</b>
+                                <p id="emergencyMessage"></p><button class="emergency-close" id="emergencyClose"
+                                    type="button" aria-label="긴급 공지 닫기">×</button>
+                            </aside>
+                            <form id="form" novalidate>
+                                <div class="field"><input id="uid" placeholder=" " autocomplete="username"><label
+                                        for="uid">아이디 또는 이메일</label></div>
+                                <p class="error" id="uiderr">아이디를 입력해 주세요.</p>
+                                <div class="field"><input id="pw" type="password" placeholder=" "
+                                        autocomplete="current-password"><label for="pw">비밀번호</label><button
+                                        type="button" class="eye" id="eye" aria-label="비밀번호 표시">◉</button></div>
+                                <p class="error" id="pwerr">비밀번호를 입력해 주세요.</p>
+                                <div class="checks"><label><input type="checkbox">아이디 저장</label><label><input
+                                            type="checkbox">로그인 상태 유지</label></div><button class="loginbtn" id="login"
+                                    type="submit">로그인</button>
+                            </form>
+                            <div class="recover"><button type="button" class="help">아이디 찾기</button><button type="button"
+                                    class="help">비밀번호 재설정</button></div>
+                            <div class="cta">
+                                <p><b>아직 이지램스를 사용하고 있지 않으신가요?</b><span>우리 자산에 꼭 맞는 운영 방식을 확인해 보세요.</span></p><button
+                                    class="ctabtn consult" type="button">도입 상담 →</button>
+                            </div>
+                            <div class="appzone"><a class="living-link has-tooltip" href="https://app.ezrems.com"
+                                    target="_blank" rel="noopener noreferrer" data-tooltip="리빙 커넥트 웹 서비스로 이동합니다."><span class="living-app-icon" aria-hidden="true"><img src="./images/icons/living-connect-app.svg" alt=""></span><span class="living-copy"><b>리빙 커넥트</b><br>임차인 전용 모바일 앱 ↗</span></a>
+                                <div class="stores"><a class="store has-tooltip"
+                                        href="https://play.google.com/store/apps/details?id=com.ezrems.living_connect"
+                                        target="_blank" rel="noopener noreferrer" aria-label="리빙 커넥트 Google Play"
+                                        data-tooltip="Google Play에서 다운로드">▶ Google Play</a><a class="store has-tooltip"
+                                        href="https://apps.apple.com/kr/app/리빙-커넥트/id6749531930" target="_blank"
+                                        rel="noopener noreferrer" aria-label="리빙 커넥트 App Store"
+                                        data-tooltip="App Store에서 다운로드">● App Store</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="footer">
+                        <div class="footer-left">
+                            <nav class="sns-links" aria-label="이지램스 관련 채널"><a class="sns-link has-tooltip"
+                                    href="https://www.youtube.com/@ezrems_official" target="_blank"
+                                    rel="noopener noreferrer" aria-label="이지램스 유튜브" data-tooltip="이지램스 공식 유튜브 채널을 새 창으로 엽니다."><svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="2" y="5" width="20" height="14" rx="5" fill="#ff0033" />
+                                        <path d="m10 9 6 3-6 3Z" fill="#fff" />
+                                    </svg></a><a class="sns-link has-tooltip" href="https://www.instagram.com/ezrems_official/"
+                                    target="_blank" rel="noopener noreferrer" aria-label="이지램스 인스타그램" data-tooltip="이지램스 공식 인스타그램을 새 창으로 엽니다."><svg
+                                        viewBox="0 0 24 24" aria-hidden="true">
+                                        <defs><linearGradient id="instagramGradientV4" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb000"/><stop offset=".48" stop-color="#f51f62"/><stop offset="1" stop-color="#7b38d8"/></linearGradient></defs>
+                                        <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#instagramGradientV4)"/>
+                                        <rect x="6.5" y="6.5" width="11" height="11" rx="3.5" fill="none" stroke="#fff" stroke-width="1.8"/>
+                                        <circle cx="12" cy="12" r="2.7" fill="none" stroke="#fff" stroke-width="1.8"/>
+                                        <circle cx="16.1" cy="7.9" r="1" fill="#fff"/>
+                                    </svg></a><a class="sns-link has-tooltip" href="https://www.easysafe.co.kr" target="_blank"
+                                    rel="noopener noreferrer" aria-label="안전보건관리 EASY SAFE" data-tooltip="안전보건관리 EASY SAFE 서비스를 새 창으로 엽니다."><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6l-7-3Z" />
+                                        <path d="m9 12 2 2 4-5" />
+                                    </svg></a></nav>
+                            <div class="footer-links"><a href="#">이용약관</a><a href="#"><b>개인정보처리방침</b></a></div>
+                        </div>
+                        <div class="footer-right"><span>© 2026 ZEONS, Inc.</span></div>
+                    </footer>
+                </section>
+            </div>
+        </section>
+    </main>
+    <div class="toast" id="toast" role="status">✓ 로그인 요청을 확인했습니다. (데모)</div>
+    <div class="modalback" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal"><span class="kicker">FREE CONSULTING</span>
+            <h3 id="modalTitle">1:1 무료 도입 컨설팅</h3>
+            <p>운영 중인 자산 유형과 고민을 알려주시면 이지램스 전문가가 적합한 도입 방식을 안내합니다.</p>
+            <p class="modalnote">라이브 목업에서는 개인정보를 수집하지 않습니다. 실제 구현 시 개인정보 수집 동의와 상담 신청 폼을 연결합니다.</p><button
+                id="close">확인</button>
+        </div>
+    </div>
+    <script src="./js/marketing-slides.js"></script>
+    <script src="./js/client-references-fallback.js"></script>
+    <script src="./js/emergency-notice-fallback.js"></script>
+    <script>
+        const CONTENT_ORIGIN = 'https://ezrems-login-content-admin.pages.dev';
+        const CONTENT_BASE = `${CONTENT_ORIGIN}/content`;
+        const contentAssetUrl = path => { const value = String(path || '').trim(); if (!value) return ''; if (/^https?:\/\//i.test(value)) return value; const localPath = value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^content\/images\//, ''); return new URL(`./images/${localPath}`, location.href).href };
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+        document.querySelector('.app').classList.add('version4');
+        const renderVisual = visual => { if (!visual) return ''; if (visual.type === 'metric') { const bars = (visual.bars || []).map(height => `<i style="height:${Math.max(8, Math.min(70, Number(height) || 8))}px"></i>`).join(''); return `<div class="visual"><div><div class="metric">${escapeHtml(visual.value)}<small>${escapeHtml(visual.label)}</small></div><div class="chart">${bars}</div></div></div>` } const items = (visual.items || []).map(item => `<span class="chip">${escapeHtml(item)}</span>`).join(''); return `<div class="visual chip-list">${items}</div>` };
+        const slidesRoot = document.querySelector('#slides'), dotsRoot = document.querySelector('#dots'); let slides = [], dots = [];
+        const renderSlideData = data => { const items = Array.isArray(data) ? data.filter(item => item.enabled !== false) : []; slidesRoot.innerHTML = items.map((item, index) => `<article class="slide${index === 0 ? ' active' : ''}" data-slide-id="${escapeHtml(item.id)}"><span class="kicker">${escapeHtml(item.category)} · ${escapeHtml(item.eyebrow)}</span><h1>${escapeHtml(item.title).replace(/\n/g, '<br>')}</h1><p>${escapeHtml(item.description)}</p>${renderVisual(item.visual)}</article>`).join(''); dotsRoot.innerHTML = items.map((item, index) => `<button class="dot${index === 0 ? ' active' : ''}" aria-label="슬라이드 ${index + 1}: ${escapeHtml(item.eyebrow)}"></button>`).join(''); slides = [...document.querySelectorAll('.slide')]; dots = [...document.querySelectorAll('.dot')]; dots.forEach((dot, index) => dot.onclick = () => show(index)); current = 0; if (slides.length) show(0); requestAnimationFrame(alignMarketingStart); return items.length > 0 };
+        const loadMarketingSlides = async () => { try { const response = await fetch(`${CONTENT_BASE}/marketing-slides.json`, { cache: 'no-store' }); if (!response.ok) throw new Error('marketing slides unavailable'); const data = await response.json(); if (!renderSlideData(data)) throw new Error('marketing slides empty') } catch (error) { if (!renderSlideData(window.EZREMS_MARKETING_SLIDES || [])) { slidesRoot.innerHTML = '<article class="slide active"><h1>콘텐츠를 불러오지 못했습니다.</h1><p>잠시 후 다시 시도해 주세요.</p></article>'; dotsRoot.innerHTML = ''; slides = [...document.querySelectorAll('.slide')]; dots = [] } } };
+        const renderClientReferences = clients => { const track = document.querySelector('#clientTrack'); if (!Array.isArray(clients) || !clients.length) return false; const cards = clients.filter(client => client.enabled !== false).map(client => `<div class="client-card" tabindex="0" data-client-tooltip="${escapeHtml(client.achievement)}" aria-label="${escapeHtml(client.name)}. ${escapeHtml(client.industry)}. ${escapeHtml(client.achievement)}"><img class="client-logo" src="${escapeHtml(contentAssetUrl(client.logoUrl))}" alt="${escapeHtml(client.name)} 로고"><span class="client-logo-fallback">${escapeHtml(client.name)}</span><span class="client-copy"><b>${escapeHtml(client.name)}</b><span>${escapeHtml(client.industry)}</span></span></div>`).join(''); if (!cards) return false; track.innerHTML = `<div class="marquee-group">${cards}</div><div class="marquee-group" aria-hidden="true">${cards}</div>`; track.querySelectorAll('.client-logo').forEach(img => { const classify = () => img.classList.toggle('is-square', Math.abs(img.naturalWidth / img.naturalHeight - 1) < .08); if (img.complete && img.naturalWidth) classify(); else img.addEventListener('load', classify, { once: true }); img.addEventListener('error', () => { img.style.display = 'none'; img.nextElementSibling.style.display = 'block' }) }); return true };
+        const loadClientReferences = async () => { try { const response = await fetch(`${CONTENT_BASE}/client-references.json`, { cache: 'no-store' }); if (!response.ok) throw new Error('client references unavailable'); const clients = await response.json(); if (!renderClientReferences(clients)) throw new Error('client references empty') } catch (error) { if (!renderClientReferences(window.EZREMS_CLIENT_REFERENCES_FALLBACK || [])) document.querySelector('#clientReferences').innerHTML = '<div class="references-label">고객사 데이터를 불러오지 못했습니다.</div>' } }; loadClientReferences();
+        const viewport = document.querySelector('#viewport'), prevBtn = document.querySelector('#prev'), nextBtn = document.querySelector('#next'), pauseBtn = document.querySelector('#pause'), formEl = document.querySelector('#form'), uidEl = document.querySelector('#uid'), pwEl = document.querySelector('#pw'), uidErr = document.querySelector('#uiderr'), pwErr = document.querySelector('#pwerr'), eyeBtn = document.querySelector('#eye'), loginBtn = document.querySelector('#login'), toastEl = document.querySelector('#toast'); let current = 0, playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, timer; function show(n) { if (!slides.length) return; current = (n + slides.length) % slides.length; slides.forEach((s, i) => s.classList.toggle('active', i === current)); dots.forEach((d, i) => d.classList.toggle('active', i === current)); restart() } function restart() { clearInterval(timer); if (playing && slides.length > 1) timer = setInterval(() => show(current + 1), 6000) } prevBtn.onclick = () => show(current - 1); nextBtn.onclick = () => show(current + 1); pauseBtn.onclick = () => { playing = !playing; pauseBtn.textContent = playing ? 'Ⅱ' : '▶'; pauseBtn.setAttribute('aria-label', playing ? '자동 재생 일시정지' : '자동 재생 시작'); restart() };
+        const applyChipLayouts = () => { document.querySelectorAll('.chip-list').forEach(list => { list.classList.remove('stacked'); void list.offsetWidth; list.classList.toggle('stacked', list.scrollWidth > list.clientWidth + 1) }) };
+        const alignMarketingStart = () => { const slidesBox = document.querySelector('#slides'), loginTitle = document.querySelector('.content h2'); if (!slidesBox || !loginTitle) return; if (viewport.classList.contains('mobile') || innerWidth <= 850) { slidesBox.style.removeProperty('--slide-start'); applyChipLayouts(); return } const offset = Math.max(0, Math.round(loginTitle.getBoundingClientRect().top - slidesBox.getBoundingClientRect().top)); slidesBox.style.setProperty('--slide-start', `${offset}px`); applyChipLayouts() }; requestAnimationFrame(alignMarketingStart); addEventListener('resize', alignMarketingStart); loadMarketingSlides();
+        document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-view]').forEach(x => x.classList.remove('active')); b.classList.add('active'); viewport.classList.toggle('mobile', b.dataset.view === 'mobile'); requestAnimationFrame(alignMarketingStart) }); eyeBtn.onclick = () => { let visible = pwEl.type === 'password'; pwEl.type = visible ? 'text' : 'password'; eyeBtn.textContent = visible ? '◌' : '◉'; eyeBtn.setAttribute('aria-label', visible ? '비밀번호 숨기기' : '비밀번호 표시') }; formEl.onsubmit = e => { e.preventDefault(); let ok = true;[[uidEl, uidErr], [pwEl, pwErr]].forEach(([f, m]) => { let bad = !f.value.trim(); f.classList.toggle('invalid', bad); m.classList.toggle('show', bad); if (bad) ok = false }); if (!ok) return; loginBtn.disabled = true; loginBtn.textContent = '안전하게 확인 중…'; setTimeout(() => { loginBtn.disabled = false; loginBtn.textContent = '로그인'; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 2600) }, 900) };[uidEl, pwEl].forEach((f, i) => f.oninput = () => { f.classList.remove('invalid');[uidErr, pwErr][i].classList.remove('show') }); const modal = document.querySelector('#modal'), closeBtn = document.querySelector('#close'); document.querySelectorAll('.consult,.help').forEach(b => b.onclick = () => { modal.classList.add('show'); closeBtn.focus() }); closeBtn.onclick = () => modal.classList.remove('show'); modal.onclick = e => { if (e.target === modal) modal.classList.remove('show') }; document.onkeydown = e => { if (e.key === 'Escape') modal.classList.remove('show') };
+    </script>
+    <script>
+        const fontOptions = { pretendard: { label: 'Pretendard', stack: 'Pretendard,"Noto Sans KR",system-ui,sans-serif' }, noto: { label: 'Noto Sans KR', stack: '"Noto Sans KR",Pretendard,system-ui,sans-serif' }, suit: { label: 'SUIT', stack: 'SUIT,Pretendard,"Noto Sans KR",system-ui,sans-serif' }, spoqa: { label: 'Spoqa Han Sans Neo', stack: '"Spoqa Han Sans Neo",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, ibm: { label: 'IBM Plex Sans KR', stack: '"IBM Plex Sans KR",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, system: { label: '시스템 기본', stack: 'system-ui,"Malgun Gothic",sans-serif' } };
+        const fontButton = document.querySelector('#fontButton'), fontMenu = document.querySelector('#fontMenu');
+        const applyFont = key => { const selectedKey = fontOptions[key] ? key : 'pretendard', option = fontOptions[selectedKey]; document.documentElement.style.setProperty('--ui-font', option.stack); fontButton.textContent = `가Aa 글꼴 · ${option.label}`; fontMenu.querySelectorAll('[data-font]').forEach(button => button.classList.toggle('active', button.dataset.font === selectedKey)); try { localStorage.setItem('ezrems-ui-font', selectedKey) } catch (error) { } };
+        let savedFont = 'pretendard'; try { savedFont = localStorage.getItem('ezrems-ui-font') || 'pretendard' } catch (error) { } applyFont(savedFont);
+        fontButton.addEventListener('click', () => { const open = !fontMenu.classList.contains('show'); fontMenu.classList.toggle('show', open); fontButton.setAttribute('aria-expanded', String(open)) });
+        fontMenu.querySelectorAll('[data-font]').forEach(button => button.addEventListener('click', () => { applyFont(button.dataset.font); fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false'); fontButton.focus() }));
+        document.addEventListener('click', event => { if (!event.target.closest('.font-picker')) { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } }); document.addEventListener('keydown', event => { if (event.key === 'Escape') { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } });
+        const emergencyTest = document.querySelector('#emergencyTest'), emergencyNotice = document.querySelector('#emergencyNotice'), emergencyClose = document.querySelector('#emergencyClose'), emergencyTitle = document.querySelector('#emergencyTitle'), emergencyMessage = document.querySelector('#emergencyMessage'); let emergencyData = null; const setEmergencyVisible = visible => { emergencyNotice.hidden = !visible; emergencyTest.setAttribute('aria-expanded', String(visible)); emergencyTest.textContent = visible ? '긴급공지 숨기기' : '긴급공지 테스트' }; const renderEmergency = data => { if (!data || !data.message) return false; emergencyData = data; emergencyTitle.textContent = [data.label, data.title].filter(Boolean).join(' · '); emergencyMessage.textContent = data.message; setEmergencyVisible(data.enabled === true); return true }; const loadEmergencyNotice = async () => { try { const response = await fetch(`${CONTENT_BASE}/emergency-notice.json`, { cache: 'no-store' }); if (!response.ok) throw new Error('emergency notice unavailable'); const data = await response.json(); if (!renderEmergency(data)) throw new Error('emergency notice empty') } catch (error) { if (!renderEmergency(window.EZREMS_EMERGENCY_NOTICE_FALLBACK || null)) { emergencyTest.hidden = true; setEmergencyVisible(false) } } }; emergencyTest.addEventListener('click', () => { if (emergencyData) setEmergencyVisible(emergencyNotice.hidden) }); emergencyClose.addEventListener('click', () => { setEmergencyVisible(false); emergencyTest.focus() }); loadEmergencyNotice();
+        const clientTrack = document.querySelector('#clientTrack'), clientTooltip = document.createElement('div'); clientTooltip.className = 'client-floating-tooltip'; clientTooltip.setAttribute('role', 'tooltip'); document.body.appendChild(clientTooltip); let activeClientCard = null; const showClientTooltip = card => { const text = card?.dataset.clientTooltip; if (!text) return; activeClientCard = card; clientTooltip.textContent = text; clientTooltip.classList.add('show'); clientTooltip.classList.remove('below'); const cardRect = card.getBoundingClientRect(), tipRect = clientTooltip.getBoundingClientRect(), left = Math.max(tipRect.width / 2 + 10, Math.min(innerWidth - tipRect.width / 2 - 10, cardRect.left + cardRect.width / 2)); let top = cardRect.top - tipRect.height - 10; if (top < 8) { top = cardRect.bottom + 10; clientTooltip.classList.add('below') } clientTooltip.style.left = `${left}px`; clientTooltip.style.top = `${top}px` }; const hideClientTooltip = () => { activeClientCard = null; clientTooltip.classList.remove('show') }; clientTrack.addEventListener('pointerover', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('pointerout', event => { const from = event.target.closest('.client-card'), to = event.relatedTarget?.closest?.('.client-card'); if (from && from !== to) hideClientTooltip() }); clientTrack.addEventListener('focusin', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('focusout', hideClientTooltip); addEventListener('scroll', () => { if (activeClientCard) showClientTooltip(activeClientCard) }, { passive: true });
+    </script>
+</body>
+
+</html>
