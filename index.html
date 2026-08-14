@@ -1695,7 +1695,7 @@
     <script>
         const CONTENT_ORIGIN = 'https://ezrems-login-content-admin.pages.dev';
         const CONTENT_BASE = `${CONTENT_ORIGIN}/content`;
-        const contentAssetUrl = path => { const value = String(path || '').trim(); if (!value) return ''; if (/^https?:\/\//i.test(value)) return value; const localPath = value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^content\/images\//, ''); return new URL(`./images/${localPath}`, location.href).href };
+        const contentAssetUrl = path => { const value = String(path || '').trim(); if (!value) return ''; if (/^https?:\/\//i.test(value)) return value; const remotePath = value.replace(/\\/g, '/').replace(/^\.\//, ''); return new URL(remotePath, `${CONTENT_ORIGIN}/`).href };
         const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
         document.querySelector('.app').classList.add('version4');
         const renderVisual = visual => { if (!visual) return ''; if (visual.type === 'metric') { const bars = (visual.bars || []).map(height => `<i style="height:${Math.max(8, Math.min(70, Number(height) || 8))}px"></i>`).join(''); return `<div class="visual"><div><div class="metric">${escapeHtml(visual.value)}<small>${escapeHtml(visual.label)}</small></div><div class="chart">${bars}</div></div></div>` } const items = (visual.items || []).map(item => `<span class="chip">${escapeHtml(item)}</span>`).join(''); return `<div class="visual chip-list">${items}</div>` };
