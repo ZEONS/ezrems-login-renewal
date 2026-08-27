@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>ezREMS Login Renewal V4 · Standalone</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css">
     <style>
         :root {
             --blue: #0c4da2;
@@ -28,7 +29,7 @@
         body {
             margin: 0;
             min-height: 100%;
-            font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+            font-family: "Paperlogy", Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
             color: var(--ink);
             background: #dbe3ec
         }
@@ -864,7 +865,7 @@
         }
 
         :root {
-            --ui-font: Pretendard, "Noto Sans KR", system-ui, sans-serif
+            --ui-font: "Paperlogy", Pretendard, "Noto Sans KR", system-ui, sans-serif
         }
 
         html,
@@ -1540,8 +1541,9 @@
                             data-tooltip="긴급 공지 표시 상태를 테스트합니다.">긴급공지 테스트</button>
                         <div class="font-picker"><button class="font-button has-tooltip tooltip-bottom" id="fontButton"
                                 type="button" aria-expanded="false" aria-controls="fontMenu"
-                                data-tooltip="화면에 적용할 한글 글꼴을 선택합니다.">가Aa 글꼴 · Pretendard</button>
+                                data-tooltip="화면에 적용할 한글 글꼴을 선택합니다.">가Aa 글꼴 · Paperlogy</button>
                             <ul class="font-menu" id="fontMenu" aria-label="한글 글꼴 선택">
+                                <li><button type="button" data-font="paperlogy">Paperlogy<small>한글·영문·숫자 균형 · 기본값</small></button></li>
                                 <li><button type="button" data-font="pretendard">Pretendard<small>균형 잡힌 현대적 UI ·
                                             추천</small></button></li>
                                 <li><button type="button" data-font="noto">Noto Sans KR<small>명확하고 안정적인 화면
@@ -1661,10 +1663,10 @@
         eyeBtn.onclick = () => { let visible = pwEl.type === 'password'; pwEl.type = visible ? 'text' : 'password'; eyeBtn.textContent = visible ? '◌' : '◉'; eyeBtn.setAttribute('aria-label', visible ? '비밀번호 숨기기' : '비밀번호 표시') }; formEl.onsubmit = e => { e.preventDefault(); let ok = true;[[uidEl, uidErr], [pwEl, pwErr]].forEach(([f, m]) => { let bad = !f.value.trim(); f.classList.toggle('invalid', bad); m.classList.toggle('show', bad); if (bad) ok = false }); if (!ok) return; loginBtn.disabled = true; loginBtn.textContent = '안전하게 확인 중…'; setTimeout(() => { loginBtn.disabled = false; loginBtn.textContent = '로그인'; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 2600) }, 900) };[uidEl, pwEl].forEach((f, i) => f.oninput = () => { f.classList.remove('invalid');[uidErr, pwErr][i].classList.remove('show') }); const modal = document.querySelector('#modal'), closeBtn = document.querySelector('#close'); document.querySelectorAll('.consult,.help').forEach(b => b.onclick = () => { modal.classList.add('show'); closeBtn.focus() }); closeBtn.onclick = () => modal.classList.remove('show'); modal.onclick = e => { if (e.target === modal) modal.classList.remove('show') }; document.onkeydown = e => { if (e.key === 'Escape') modal.classList.remove('show') };
     </script>
     <script>
-        const fontOptions = { pretendard: { label: 'Pretendard', stack: 'Pretendard,"Noto Sans KR",system-ui,sans-serif' }, noto: { label: 'Noto Sans KR', stack: '"Noto Sans KR",Pretendard,system-ui,sans-serif' }, suit: { label: 'SUIT', stack: 'SUIT,Pretendard,"Noto Sans KR",system-ui,sans-serif' }, spoqa: { label: 'Spoqa Han Sans Neo', stack: '"Spoqa Han Sans Neo",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, ibm: { label: 'IBM Plex Sans KR', stack: '"IBM Plex Sans KR",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, system: { label: '시스템 기본', stack: 'system-ui,"Malgun Gothic",sans-serif' } };
+        const fontOptions = { paperlogy: { label: 'Paperlogy', stack: '"Paperlogy",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, pretendard: { label: 'Pretendard', stack: 'Pretendard,"Noto Sans KR",system-ui,sans-serif' }, noto: { label: 'Noto Sans KR', stack: '"Noto Sans KR",Pretendard,system-ui,sans-serif' }, suit: { label: 'SUIT', stack: 'SUIT,Pretendard,"Noto Sans KR",system-ui,sans-serif' }, spoqa: { label: 'Spoqa Han Sans Neo', stack: '"Spoqa Han Sans Neo",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, ibm: { label: 'IBM Plex Sans KR', stack: '"IBM Plex Sans KR",Pretendard,"Noto Sans KR",system-ui,sans-serif' }, system: { label: '시스템 기본', stack: 'system-ui,"Malgun Gothic",sans-serif' } };
         const fontButton = document.querySelector('#fontButton'), fontMenu = document.querySelector('#fontMenu');
-        const applyFont = key => { const selectedKey = fontOptions[key] ? key : 'pretendard', option = fontOptions[selectedKey]; document.documentElement.style.setProperty('--ui-font', option.stack); fontButton.textContent = `가Aa 글꼴 · ${option.label}`; fontMenu.querySelectorAll('[data-font]').forEach(button => button.classList.toggle('active', button.dataset.font === selectedKey)); try { localStorage.setItem('ezrems-ui-font', selectedKey) } catch (error) { } };
-        let savedFont = 'pretendard'; try { savedFont = localStorage.getItem('ezrems-ui-font') || 'pretendard' } catch (error) { } applyFont(savedFont);
+        const applyFont = key => { const selectedKey = fontOptions[key] ? key : 'paperlogy', option = fontOptions[selectedKey]; document.documentElement.style.setProperty('--ui-font', option.stack); fontButton.textContent = `가Aa 글꼴 · ${option.label}`; fontMenu.querySelectorAll('[data-font]').forEach(button => button.classList.toggle('active', button.dataset.font === selectedKey)); try { localStorage.setItem('ezrems-ui-font', selectedKey) } catch (error) { } };
+        let savedFont = 'paperlogy'; try { savedFont = localStorage.getItem('ezrems-ui-font') || 'paperlogy' } catch (error) { } applyFont(savedFont);
         fontButton.addEventListener('click', () => { const open = !fontMenu.classList.contains('show'); fontMenu.classList.toggle('show', open); fontButton.setAttribute('aria-expanded', String(open)) });
         fontMenu.querySelectorAll('[data-font]').forEach(button => button.addEventListener('click', () => { applyFont(button.dataset.font); fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false'); fontButton.focus() }));
         document.addEventListener('click', event => { if (!event.target.closest('.font-picker')) { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } }); document.addEventListener('keydown', event => { if (event.key === 'Escape') { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } });
