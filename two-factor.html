@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ezREMS 2차 인증</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css">
+<style>
+:root{--blue:#0c4da2;--deep:#082f68;--navy:#071b34;--red:#ef292d;--ink:#172033;--muted:#68758a;--line:#dfe5ec;--soft:#f3f6fa;--white:#fff;--ok:#087d61;--shadow:0 24px 70px rgba(8,38,77,.16)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Paperlogy",Pretendard,"Noto Sans KR",system-ui,sans-serif;color:var(--ink);background:#dbe3ec}button,input{font:inherit}.canvas{min-height:100vh;display:grid;place-items:center;padding:28px}.viewport{width:min(1240px,100%);min-height:min(760px,calc(100vh - 56px));display:grid;grid-template-columns:42% 58%;background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.security-panel{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:48px clamp(32px,4vw,62px);color:#fff;background:linear-gradient(145deg,#0c4da2,#082e68 60%,#061d43)}.security-panel:before,.security-panel:after{content:"";position:absolute;border-radius:50%;background:#ffffff0b}.security-panel:before{width:430px;height:430px;right:-210px;top:-160px}.security-panel:after{width:300px;height:300px;left:-160px;bottom:-100px}.security-copy{position:relative;z-index:1;margin:auto 0;max-width:430px}.icon-shell{width:72px;height:72px;display:grid;place-items:center;border:1px solid #ffffff30;border-radius:22px;background:#ffffff12;box-shadow:inset 0 1px #ffffff24}.icon-shell img{width:34px;filter:brightness(0) invert(1)}.eyebrow{display:block;margin:28px 0 15px;color:#8ed4ff;font-size:12px;font-weight:600;letter-spacing:.15em}.security-copy h1{margin:0;font-size:clamp(34px,3.4vw,52px);line-height:1.18;letter-spacing:-.045em}.security-copy p{margin:22px 0 0;color:#d5e4f5;font-size:15px;line-height:1.75}.security-points{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap}.security-points span{padding:8px 11px;border:1px solid #ffffff26;border-radius:10px;background:#ffffff0d;font-size:11px;color:#dceafb}
+.auth-side{display:grid;place-items:center;padding:54px clamp(28px,6vw,90px)}.auth-card{width:min(470px,100%)}.auth-nav{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:40px}.back{display:inline-flex;align-items:center;gap:7px;margin:0;border:0;background:none;padding:0;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer}.back:hover{color:var(--blue)}.step{display:inline-flex;align-items:center;gap:7px;color:var(--blue);font-size:12px;font-weight:600;letter-spacing:.04em}.step:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px #e9f2ff}.auth-card h2{margin:16px 0 11px;font-size:34px;line-height:1.25;letter-spacing:-.04em}.lead{margin:0;color:var(--muted);font-size:14px;line-height:1.7}.destination{margin-top:18px;padding:13px 15px;border-radius:12px;background:var(--soft);font-size:13px;color:#46546a}.method-tabs{display:grid;grid-template-columns:1fr 1fr;margin-top:28px;padding:4px;border-radius:12px;background:#eef2f7}.method-tabs button{height:42px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;cursor:pointer}.method-tabs button.active{background:#fff;color:var(--blue);box-shadow:0 3px 12px rgba(23,32,51,.1)}.code-label{display:flex;justify-content:space-between;align-items:center;margin:26px 0 10px;font-size:12px;font-weight:500}.timer{display:flex;align-items:center;gap:6px;color:var(--red);font-variant-numeric:tabular-nums}.timer:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}.code-fields{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.code-fields input{min-width:0;height:64px;border:1px solid #cfd8e4;border-radius:11px;background:#fff;text-align:center;font-size:25px;font-weight:600;color:var(--ink);outline:0;transition:.18s}.code-fields input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0c4da21a}.code-fields input.invalid{border-color:var(--red);background:#fff8f8}.message{min-height:21px;margin:10px 0 0;color:var(--red);font-size:12px}.verify{width:100%;height:52px;margin-top:9px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 9px 20px #0c4da228}.verify:disabled{background:#c9d3df;box-shadow:none;cursor:not-allowed}.verify:not(:disabled):hover{background:#0a438e}.resend-row{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:20px;color:var(--muted);font-size:12px}.resend{border:0;background:none;padding:3px;color:var(--red);font-weight:600;cursor:pointer}.resend:disabled{color:#aab4c1;cursor:not-allowed}.help{margin-top:34px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.65}.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);padding:12px 18px;border-radius:11px;background:#10233e;color:#fff;font-size:12px;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){.canvas{padding:0}.viewport{width:100%;min-height:100vh;border-radius:0;display:block}.security-panel{min-height:250px;padding:28px 24px}.security-copy{margin:42px 0 18px}.icon-shell,.security-copy p,.security-points{display:none}.security-copy .eyebrow{margin:0 0 10px}.security-copy h1{font-size:29px}.auth-side{padding:36px 24px 46px}.auth-nav{margin-bottom:28px}.back{margin:0}.auth-card h2{font-size:28px}}@media(max-width:420px){.auth-nav{align-items:flex-start}.back{max-width:170px;text-align:left;line-height:1.4}.step{white-space:nowrap;margin-top:2px}.code-fields{gap:6px}.code-fields input{height:56px;font-size:22px}.method-tabs{margin-top:22px}}
+</style>
+</head>
+<body>
+<main class="canvas">
+<section class="viewport">
+<aside class="security-panel" aria-label="ezREMS 보안 안내">
+
+<div class="security-copy"><div class="icon-shell"><img src="./images/icons/shield-check.svg" alt="" aria-hidden="true"></div><span class="eyebrow">SECURE ACCESS</span><h1>한 번 더 확인하고,<br>안전하게 시작하세요.</h1><p>등록된 연락처로 전달된 인증코드를 입력하면 ezREMS 서비스로 안전하게 연결됩니다.</p></div>
+<div class="security-points"><span>6자리 일회용 코드</span><span>3분 유효시간</span><span>암호화된 인증</span></div>
+</aside>
+<section class="auth-side">
+<form class="auth-card" id="authForm" novalidate>
+<div class="auth-nav">
+<button class="back" type="button" id="back">← 로그인 화면으로 돌아가기</button>
+<span class="step">로그인 2단계</span>
+</div>
+<h2>2차 인증</h2>
+<p class="lead">계정 보호를 위해 전송된 6자리 인증코드를 입력해 주세요.</p>
+<div class="destination" id="destination">이메일 <b>ji***@zeons.co.kr</b>로 인증코드를 보냈습니다.</div>
+<div class="method-tabs" role="tablist" aria-label="인증 방법">
+<button type="button" role="tab" data-method="sms" aria-selected="false">SMS</button>
+<button type="button" role="tab" class="active" data-method="email" aria-selected="true">이메일</button>
+</div>
+<div class="code-label"><label for="code1">인증코드</label><span class="timer" id="timer">03:00</span></div>
+<div class="code-fields" id="codeFields" aria-label="6자리 인증코드">
+<input id="code1" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="인증코드 첫 번째 자리">
+<input inputmode="numeric" maxlength="1" aria-label="인증코드 두 번째 자리">
+<input inputmode="numeric" maxlength="1" aria-label="인증코드 세 번째 자리">
+<input inputmode="numeric" maxlength="1" aria-label="인증코드 네 번째 자리">
+<input inputmode="numeric" maxlength="1" aria-label="인증코드 다섯 번째 자리">
+<input inputmode="numeric" maxlength="1" aria-label="인증코드 여섯 번째 자리">
+</div>
+<p class="message" id="message" role="alert"></p>
+<button class="verify" id="verify" type="submit" disabled>인증 확인</button>
+<div class="resend-row"><span>코드를 받지 못하셨나요?</span><button class="resend" id="resend" type="button">인증코드 재발송</button></div>
+<p class="help">인증 시간이 만료되면 코드를 다시 요청할 수 있습니다. 본인이 요청하지 않은 로그인이라면 창을 닫고 관리자에게 문의해 주세요.</p>
+</form>
+</section>
+</section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+const fields=[...document.querySelectorAll('#codeFields input')],verify=document.querySelector('#verify'),message=document.querySelector('#message'),timer=document.querySelector('#timer'),resend=document.querySelector('#resend'),destination=document.querySelector('#destination'),toast=document.querySelector('#toast');
+let remaining=180,tick=null,method='email';
+function code(){return fields.map(function(field){return field.value}).join('')}
+function update(){verify.disabled=code().length!==6||remaining<=0;fields.forEach(function(field){field.classList.remove('invalid')});if(message.textContent&&remaining>0)message.textContent=''}
+function startTimer(){clearInterval(tick);remaining=180;resend.disabled=true;timer.textContent='03:00';tick=setInterval(function(){remaining-=1;const minute=String(Math.floor(remaining/60)).padStart(2,'0'),second=String(remaining%60).padStart(2,'0');timer.textContent=minute+':'+second;if(remaining<=0){clearInterval(tick);timer.textContent='00:00';verify.disabled=true;resend.disabled=false;message.textContent='인증 시간이 만료되었습니다. 인증코드를 다시 요청해 주세요.'}},1000)}
+fields.forEach(function(field,index){field.addEventListener('input',function(){field.value=field.value.replace(/\D/g,'').slice(-1);if(field.value&&index<fields.length-1)fields[index+1].focus();update()});field.addEventListener('keydown',function(event){if(event.key==='Backspace'&&!field.value&&index>0)fields[index-1].focus();if(event.key==='ArrowLeft'&&index>0)fields[index-1].focus();if(event.key==='ArrowRight'&&index<fields.length-1)fields[index+1].focus()});field.addEventListener('paste',function(event){const value=(event.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);if(!value)return;event.preventDefault();fields.forEach(function(item,i){item.value=value[i]||''});fields[Math.min(value.length,6)-1].focus();update()})});
+document.querySelectorAll('[data-method]').forEach(function(button){button.addEventListener('click',function(){method=button.dataset.method;document.querySelectorAll('[data-method]').forEach(function(item){const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active))});destination.innerHTML=method==='email'?'이메일 <b>ji***@zeons.co.kr</b>로 인증코드를 보냈습니다.':'휴대전화 <b>010-****-4821</b>로 인증코드를 보냈습니다.';fields.forEach(function(field){field.value=''});fields[0].focus();message.textContent='';startTimer();update()})});
+document.querySelector('#authForm').addEventListener('submit',function(event){event.preventDefault();if(code().length!==6){message.textContent='6자리 인증코드를 모두 입력해 주세요.';fields.forEach(function(field){field.classList.add('invalid')});fields[0].focus();return}verify.disabled=true;verify.textContent='인증 확인 중…';setTimeout(function(){verify.textContent='인증 확인';verify.disabled=false;toast.textContent='인증이 완료되었습니다. ezREMS로 이동합니다.';toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},2600)},700)});
+resend.addEventListener('click',function(){fields.forEach(function(field){field.value=''});fields[0].focus();message.textContent='';startTimer();update();toast.textContent=(method==='email'?'이메일':'SMS')+' 인증코드를 다시 보냈습니다.';toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},2200)});
+document.querySelector('#back').addEventListener('click',function(){if(history.length>1)history.back();else location.href='./index.html'});
+startTimer();fields[0].focus();
+})();
+</script>
+</body>
+</html>
