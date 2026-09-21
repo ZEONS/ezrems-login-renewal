@@ -1,0 +1,47 @@
+.user-settings-entry { width:100%; margin-top:16px; padding:12px; display:flex; justify-content:space-between; border:1px solid var(--line); border-radius:8px; background:var(--soft); color:var(--blue); font-weight:700; cursor:pointer }
+.theme-source-help { display:block; margin-top:8px; color:var(--muted); font-size:10px; line-height:1.6 }
+#registeredThemeSettings,#customThemeSettings { padding:4px 0 12px 10px }
+#customThemeSettings .user-settings-entry { margin-top:0 }
+html[data-user-panel] .marketing { background-image:linear-gradient(#04142b88,#041f4aaa),var(--user-panel-image) !important; background-size:cover; background-position:center !important }
+html[data-user-panel] .marketing.card-background .slides,
+html[data-user-panel-default] .marketing.card-background .slides { background-image:none !important; background-color:transparent; box-shadow:none }
+html[data-user-panel-default] .marketing { background-image:linear-gradient(145deg, #0c4da2, #082e68 60%, #061d43) !important }
+html[data-user-page-default] .canvas { background-image:none !important; background-color:#dbe3ec }
+html[data-user-page] .canvas { background-image:var(--user-page-image) !important; background-position:center !important }
+.user-settings-dialog { position:fixed; inset:auto 0 0; margin:0 auto; width:min(760px,100%); max-width:100%; max-height:90dvh; padding:0; border:0; border-radius:24px 24px 0 0; background:#fff; color:var(--ink); box-shadow:0 -16px 70px #071b342b; overflow:auto; overscroll-behavior:contain; font:inherit }
+.user-settings-dialog[open] { animation:settings-rise .3s ease-out }
+.user-settings-dialog::backdrop { background:#071b3470 }
+@keyframes settings-rise { from { transform:translateY(100%); opacity:.5 } to { transform:translateY(0); opacity:1 } }
+.user-settings-content { padding:12px 28px max(24px,env(safe-area-inset-bottom)) }
+.settings-handle { width:40px; height:4px; margin:0 auto 20px; border-radius:4px; background:#cbd5e1 }
+.settings-heading { display:flex; align-items:center; justify-content:space-between; gap:16px }
+.settings-heading h2 { margin:0; font-size:22px }
+.user-settings-dialog button,.user-settings-dialog select { font:inherit; cursor:pointer }
+.user-settings-dialog #closeUserSettings,.user-settings-dialog #resetUserSettings,.user-settings-dialog #saveUserSettings { font-size:13px }
+.user-settings-dialog button { min-height:40px; padding:9px 14px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink) }
+.user-settings-dialog button:focus-visible,.user-settings-dialog select:focus-visible,.user-settings-dialog input:focus-visible { outline:3px solid #3781d9; outline-offset:3px }
+.settings-notice { padding:14px 16px; border-radius:12px; background:#eef5ff; color:#234c7a; font-size:12px; line-height:1.7; margin:18px 0 }
+.settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px }
+.settings-image { min-width:0; margin:0; padding:16px; border:1px solid var(--line); border-radius:14px }
+.settings-image legend { padding:0 5px; font-size:14px; font-weight:700 }
+.settings-preview { height:112px; display:grid; place-items:center; margin-bottom:12px; border-radius:8px; background:#f3f6fa; color:var(--muted); font-size:12px; overflow:hidden }
+.settings-preview img { width:100%; height:100%; object-fit:cover }
+#panelPreview.is-default { background:linear-gradient(145deg, #0c4da2, #082e68 60%, #061d43); color:white }
+#pagePreview.is-default { background:#dbe3ec; color:var(--ink) }
+.settings-image input { display:block; width:100%; font-size:11px; margin:10px 0 }
+.settings-image button { font-size:12px; width:100% }
+.settings-font { display:block; margin:22px 0 8px; font-size:14px; font-weight:700 }
+#userFont { width:100%; border:1px solid var(--line); border-radius:9px; padding:12px; background:white; color:var(--ink); font-size:13px }
+.settings-font-preview { border-radius:10px; padding:16px; background:var(--soft); font-size:13px; line-height:1.6; margin-top:10px }
+.settings-help { color:var(--muted); font-size:11px; line-height:1.6 }
+.settings-status { min-height:20px; font-size:12px; color:var(--blue); line-height:1.6 }
+.settings-status[data-error] { color:#b42318 }
+.settings-actions { display:flex; justify-content:space-between; gap:12px; border-top:1px solid var(--line); padding-top:16px }
+.settings-actions .settings-save { background:var(--blue); color:white; border-color:var(--blue); font-weight:700 }
+.user-settings-dialog button:disabled { opacity:.5; cursor:wait }
+@media(max-width:540px) { .user-settings-content { padding-left:18px; padding-right:18px } .settings-grid { grid-template-columns:1fr } .settings-preview { height:90px } }
+@media(prefers-reduced-motion:reduce) { .user-settings-dialog[open] { animation:none } }
+.utility .references-settings { position:relative; margin:0 }
+.utility .references-settings .theme-button img { filter:none }
+.utility .references-settings .theme-button:focus-visible { outline-color:var(--blue) }
+.utility .layout-panel { top:calc(100% + 10px); bottom:auto; right:auto; left:0; text-align:left }
