@@ -1102,8 +1102,13 @@
 
         .marquee {
             overflow: hidden;
-            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)
+            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+            cursor: grab;
+            touch-action: pan-y;
+            user-select: none
         }
+
+        .marquee.is-dragging { cursor: grabbing }
 
         .marquee-track {
             display: flex;
@@ -1112,7 +1117,8 @@
         }
 
         .marquee:hover .marquee-track,
-        .marquee:focus-within .marquee-track {
+        .marquee:focus-within .marquee-track,
+        .marquee.is-dragging .marquee-track {
             animation-play-state: paused
         }
 
@@ -1179,8 +1185,11 @@
         }
 
         @keyframes clientRoll {
+            from {
+                transform: translateX(var(--client-drag-offset, 0px))
+            }
             to {
-                transform: translateX(-50%)
+                transform: translateX(calc(-50% + var(--client-drag-offset, 0px)))
             }
         }
 
@@ -1965,7 +1974,13 @@
         fontMenu.querySelectorAll('[data-font]').forEach(button => button.addEventListener('click', () => { applyFont(button.dataset.font); fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false'); fontButton.focus() }));
         document.addEventListener('click', event => { if (!event.target.closest('.font-picker')) { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } }); document.addEventListener('keydown', event => { if (event.key === 'Escape') { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } });
         const emergencyTest = document.querySelector('#emergencyTest'), emergencyNotice = document.querySelector('#emergencyNotice'), emergencyClose = document.querySelector('#emergencyClose'), emergencyTitle = document.querySelector('#emergencyTitle'), emergencyMessage = document.querySelector('#emergencyMessage'); let emergencyData = null; const setEmergencyVisible = visible => { emergencyNotice.hidden = !visible; emergencyTest.setAttribute('aria-expanded', String(visible)); emergencyTest.textContent = visible ? '긴급공지 숨기기' : '긴급공지 테스트' }; const renderEmergency = data => { if (!data || !data.message) return false; emergencyData = data; emergencyTitle.textContent = [data.label, data.title].filter(Boolean).join(' · '); emergencyMessage.textContent = data.message; setEmergencyVisible(data.enabled === true); return true }; const loadEmergencyNotice = async () => { try { const response = await fetch(`${CONTENT_BASE}/emergency-notice`, { cache: 'no-store' }); if (!response.ok) throw new Error('emergency notice unavailable'); const data = await response.json(); if (!renderEmergency(data)) throw new Error('emergency notice empty') } catch (error) { if (!renderEmergency(window.EZREMS_EMERGENCY_NOTICE_FALLBACK || null)) { emergencyTest.hidden = true; setEmergencyVisible(false) } } }; emergencyTest.addEventListener('click', () => { if (emergencyData) setEmergencyVisible(emergencyNotice.hidden) }); emergencyClose.addEventListener('click', () => { setEmergencyVisible(false); emergencyTest.focus() }); loadEmergencyNotice();
-        const clientTrack = document.querySelector('#clientTrack'), clientTooltip = document.createElement('div'); clientTooltip.className = 'client-floating-tooltip'; clientTooltip.setAttribute('role', 'tooltip'); document.body.appendChild(clientTooltip); let activeClientCard = null; const showClientTooltip = card => { const text = card?.dataset.clientTooltip; if (!text) return; activeClientCard = card; clientTooltip.textContent = text; clientTooltip.classList.add('show'); clientTooltip.classList.remove('below'); const cardRect = card.getBoundingClientRect(), tipRect = clientTooltip.getBoundingClientRect(), left = Math.max(tipRect.width / 2 + 10, Math.min(innerWidth - tipRect.width / 2 - 10, cardRect.left + cardRect.width / 2)); let top = cardRect.top - tipRect.height - 10; if (top < 8) { top = cardRect.bottom + 10; clientTooltip.classList.add('below') } clientTooltip.style.left = `${left}px`; clientTooltip.style.top = `${top}px` }; const hideClientTooltip = () => { activeClientCard = null; clientTooltip.classList.remove('show') }; clientTrack.addEventListener('pointerover', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('pointerout', event => { const from = event.target.closest('.client-card'), to = event.relatedTarget?.closest?.('.client-card'); if (from && from !== to) hideClientTooltip() }); clientTrack.addEventListener('focusin', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('focusout', hideClientTooltip); addEventListener('scroll', () => { if (activeClientCard) showClientTooltip(activeClientCard) }, { passive: true });
+        const clientTrack = document.querySelector('#clientTrack'), clientMarquee = clientTrack.closest('.marquee'), clientTooltip = document.createElement('div'); clientTooltip.className = 'client-floating-tooltip'; clientTooltip.setAttribute('role', 'tooltip'); document.body.appendChild(clientTooltip); let activeClientCard = null; const showClientTooltip = card => { const text = card?.dataset.clientTooltip; if (!text) return; activeClientCard = card; clientTooltip.textContent = text; clientTooltip.classList.add('show'); clientTooltip.classList.remove('below'); const cardRect = card.getBoundingClientRect(), tipRect = clientTooltip.getBoundingClientRect(), left = Math.max(tipRect.width / 2 + 10, Math.min(innerWidth - tipRect.width / 2 - 10, cardRect.left + cardRect.width / 2)); let top = cardRect.top - tipRect.height - 10; if (top < 8) { top = cardRect.bottom + 10; clientTooltip.classList.add('below') } clientTooltip.style.left = `${left}px`; clientTooltip.style.top = `${top}px` }; const hideClientTooltip = () => { activeClientCard = null; clientTooltip.classList.remove('show') }; clientTrack.addEventListener('pointerover', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('pointerout', event => { const from = event.target.closest('.client-card'), to = event.relatedTarget?.closest?.('.client-card'); if (from && from !== to) hideClientTooltip() }); clientTrack.addEventListener('focusin', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('focusout', hideClientTooltip); addEventListener('scroll', () => { if (activeClientCard) showClientTooltip(activeClientCard) }, { passive: true });
+        let clientDragPointer = null, clientDragStartX = 0, clientDragStartOffset = 0, clientDragOffset = 0;
+        const normalizeClientDragOffset = value => { const group = clientTrack.querySelector('.marquee-group'), width = group?.getBoundingClientRect().width || 0; if (!width) return value; return ((value % width) + width) % width - width };
+        const endClientDrag = event => { if (event.pointerId !== clientDragPointer) return; clientDragOffset = normalizeClientDragOffset(clientDragOffset); clientTrack.style.setProperty('--client-drag-offset', `${clientDragOffset}px`); clientMarquee.classList.remove('is-dragging'); if (clientMarquee.hasPointerCapture(event.pointerId)) clientMarquee.releasePointerCapture(event.pointerId); clientDragPointer = null };
+        clientMarquee.addEventListener('pointerdown', event => { if (event.button !== 0 && event.pointerType === 'mouse') return; clientDragPointer = event.pointerId; clientDragStartX = event.clientX; clientDragStartOffset = clientDragOffset; clientMarquee.classList.add('is-dragging'); clientMarquee.setPointerCapture(event.pointerId); hideClientTooltip() });
+        clientMarquee.addEventListener('pointermove', event => { if (event.pointerId !== clientDragPointer) return; clientDragOffset = clientDragStartOffset + event.clientX - clientDragStartX; clientTrack.style.setProperty('--client-drag-offset', `${clientDragOffset}px`) });
+        clientMarquee.addEventListener('pointerup', endClientDrag); clientMarquee.addEventListener('pointercancel', endClientDrag);
     </script>
     <!-- 로컬 화면 설정 모듈: 외부 서버가 아니라 같은 login/js 폴더에서 불러옵니다. -->
     <script src="./js/layout-settings.js"></script>
