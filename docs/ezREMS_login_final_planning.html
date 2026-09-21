@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ezREMS 로그인 개편 최종 기획서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css">
+<style>:root{font-family:"Paperlogy","Noto Sans KR",system-ui,sans-serif;color:#172033;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1080px;margin:auto;padding:56px 24px 96px}header{padding:40px;border-radius:26px;background:linear-gradient(135deg,#071b34,#0c4da2);color:#fff}h1{margin:0 0 12px;font-size:36px;font-weight:700}h2{margin:0 0 16px;font-size:22px;font-weight:700}h3{font-weight:600}p,li,td,th{line-height:1.75;font-weight:400}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:22px}.card{background:#fff;border:1px solid #dfe5ec;border-radius:18px;padding:24px}.wide{grid-column:1/-1}table{width:100%;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid #e6ebf1;text-align:left}th{font-weight:600;background:#f7f9fc}pre{overflow:auto;padding:18px;border-radius:12px;background:#0d1b2e;color:#dce9ff}.tag{font-weight:500;opacity:.82}</style></head>
+<body><main class="wrap"><header><div class="tag">V5 · 2026-09-21</div><h1>이지램스 로그인 개편 최종 기획서</h1><p>로그인·2차 인증·고객 공개 페이지 통합 구성</p></header>
+<div class="grid"><section class="card wide"><h2>로그인 서비스 페이지 구조</h2><table><thead><tr><th>화면</th><th>운영 경로</th><th>역할</th></tr></thead><tbody><tr><td>로그인 페이지</td><td>/ezrems-login-renewal/</td><td>계정 인증 시작, 마케팅·공지·고객사 콘텐츠 제공</td></tr><tr><td>2차 인증 페이지</td><td>/ezrems-login-renewal/two-factor.html</td><td>SMS·이메일 6자리 코드로 추가 본인 확인</td></tr><tr><td>고객 공개 페이지</td><td>/ezrems-login-renewal/customers/</td><td>고객사·ERP·자산 포트폴리오와 성과 홍보</td></tr></tbody></table></section>
+<section class="card"><h2>로그인 페이지</h2><p>왼쪽은 마케팅 슬라이드·공통 패널 배경·페이지 전체 배경·고객사 로고, 오른쪽은 IP 위치 안내·아이디/이메일·비밀번호·오류 메시지·로그인·도움말로 구성합니다. 전체 성공 사례 보기는 고객 공개 페이지를 새 탭으로 엽니다.</p></section>
+<section class="card"><h2>2차 인증 페이지</h2><p>로그인 화면과 같은 Paperlogy 디자인 체계를 사용합니다. SMS·이메일 선택, 6자리 코드, 3분 타이머, 재발송, 오류 안내와 로그인 화면 복귀를 제공합니다. 실제 발송·검증·세션 발급은 내부 인증 시스템 연동 범위입니다.</p></section>
+<section class="card wide"><h2>고객 공개 페이지</h2><p>관리자 도메인이 아닌 로그인 GitHub Pages의 <b>/customers/</b>에서 운영합니다. Cloudflare 공개 API로 고객사와 로고만 읽고 관리자 화면·쓰기 API에는 접근하지 않습니다. 공개 고객사는 이름과 로고를 표시하고, 비공개 고객사는 이름·로고만 제한하며 업종·키워드·성과는 유지합니다. 현재 운영 데이터 30건은 모두 공개입니다.</p></section>
+<section class="card"><h2>동적 범위</h2><ul><li>긴급공지</li><li>마케팅 패널 및 공통 배경 테마</li><li>고객사 데이터</li></ul></section>
+<section class="card wide"><h2>구조와 화면 이동</h2><pre>관리자(Cloudflare Pages) → Access 인증 → KV(JSON) / R2(이미지)
+로그인(GitHub Pages) → 공개 콘텐츠·IP API → Cloudflare KV / R2
+로그인 → 내부 1차 인증 → 2차 인증 → ezREMS 서비스
+로그인 → 전체 성공 사례 보기 → 고객 공개 페이지(새 탭)
+고객 공개 페이지 → 고객사 공개 API·로고 → Cloudflare KV / R2</pre></section>
+<section class="card"><h2>외부 연동</h2><p>콘텐츠는 ezrems-login-admin.pages.dev의 공개 API에서 읽고 실패 시 로컬 폴백을 사용합니다. IP 위치는 접속 IP 기반이며 5초 실패 시 “확인 불가”로 표시합니다.</p></section>
+<section class="card"><h2>배경 테마</h2><p>슬라이드와 분리된 공통 요소입니다. 패널형·카드형, 이미지·위치·오버레이를 저장해 선택·수정·삭제·재사용합니다.</p></section>
+<section class="card wide"><h2>인증 적용 전 필수</h2><p>현재 제출은 UI 목업입니다. 내부 인증 API를 HTTPS POST로 연결하고 비밀번호 비저장, 오류 코드 매핑, 세션, 실패 제한, 2차 인증 전환을 검증해야 합니다.</p></section>
+<section class="card"><h2>배포</h2><p>관리자: admin 폴더를 ZEONS/ezrems-login-content-admin의 main 브랜치에 푸시하면 Cloudflare가 자동 배포<br>관리 주소: https://ezrems-login-admin.pages.dev/admin<br>로그인·2차 인증·고객 공개: login 폴더를 ZEONS/ezrems-login-renewal에 푸시하면 GitHub Pages가 배포</p><p>Wrangler 직접 배포는 자동 배포 장애 시 비상 복구용으로만 사용합니다.</p></section>
+<section class="card wide"><h2>Cloudflare Access 설정</h2><p>Self-hosted 애플리케이션의 목적지를 <b>ezrems-login-admin.pages.dev/admin*</b>로 지정하고 Allow 정책에 관리자 이메일을 등록합니다. Worker에는 ACCESS_TEAM_DOMAIN, ACCESS_AUD, ACCESS_ADMIN_EMAIL을 설정합니다. ADMIN_API_TOKEN은 브라우저 입력용이 아니라 비상 복구용 서버 인증으로만 유지합니다.</p></section>
+<section class="card"><h2>관리자·세션 운영</h2><p>기본 세션은 24시간입니다. 관리자를 추가·삭제할 때는 Access Allow 정책과 Worker 허용 이메일을 함께 변경하고 재배포한 뒤 시크릿 창에서 로그인·저장·업로드를 검증합니다.</p></section>
+<section class="card"><h2>일상 운영</h2><p>/admin 로그인 → 콘텐츠 수정 → 저장 성공 확인 → 통합 미리보기 새로고침 → 실제 GitHub Pages 확인 순서로 운영합니다. 소스 변경은 GitHub main 푸시 후 Cloudflare 자동 배포를 확인하며, 장애 시 공개 API, Access 세션, 최신 배포, KV/R2 바인딩을 차례로 점검합니다.</p></section>
+<section class="card"><h2>완료 기준</h2><p>KV 저장 유지, R2 이미지 재조회, 로그인 최신 콘텐츠 반영, Access 비인가 차단과 공개 API 정상 조회, 리디렉션 정상 동작, API 장애 폴백, 오류·키보드 접근성, 실제 인증 연동 검증을 완료합니다.</p></section></div>
+</main></body></html>

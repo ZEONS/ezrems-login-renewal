@@ -51,11 +51,15 @@
 ## 파일
 
 - `index.html`: 화면, 렌더링, API 연동
+- `two-factor.html`: 로그인 2차 인증 화면
+- `customers/index.html`: 고객사·ERP 공개 홍보 화면
 - `js/marketing-slides.js`: 마케팅 폴백
 - `js/client-references-fallback.js`: 고객사 폴백
 - `js/emergency-notice-fallback.js`: 공지 폴백
 - `js/layout-settings.js`: 로컬 화면 설정
 - `images/`: 정적 로고·이미지
+- `docs/ezREMS_login_final_planning.md`: 로그인·2차 인증·고객 공개 페이지 V5 기획서
+- `docs/ezREMS_login_final_planning.html`: Paperlogy 기반 V5 기획서 HTML
 
 ## 실행과 배포
 
