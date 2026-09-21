@@ -140,5 +140,6 @@
         saved = { ...draft }; applyImages(); applyFont(fontSelect.value);
         window.dispatchEvent(new Event('resize'));
         message('이 브라우저에만 저장하고 적용했습니다.');
+        dialog.close();
     });
 })();
