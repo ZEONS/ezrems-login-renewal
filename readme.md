@@ -17,6 +17,10 @@
 | 마케팅 패널·배경 테마 | `/api/public-content/marketing-slides` | 로컬 슬라이드 폴백 |
 | 고객사 데이터 | `/api/public-content/client-references` | 로컬 고객사 폴백 |
 
+## 고객사 공개 페이지
+
+공개 고객사·ERP 사례 페이지는 `customers/index.html`이며 운영 주소는 `https://zeons.github.io/ezrems-login-renewal/customers/`입니다. 로그인 화면의 `전체 성공 사례 보기` 링크도 이 주소로 이동합니다. 화면 주소는 로그인 GitHub Pages를 유지하고, 데이터와 고객사 로고만 Cloudflare의 공개 콘텐츠 API에서 불러옵니다. 관리자 화면 및 관리자 저장 API는 사용하지 않습니다.
+
 요청은 최신 값을 받도록 `cache: no-store`를 사용합니다. 상대 이미지 경로는 Cloudflare 관리자 도메인을 기준으로 절대 URL로 변환됩니다.
 
 ## 외부 연동
