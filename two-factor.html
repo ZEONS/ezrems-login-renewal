@@ -18,17 +18,17 @@
 <section class="viewport">
 <aside class="security-panel" aria-label="ezREMS 보안 안내">
 
-<div class="security-copy"><div class="icon-shell"><img src="./images/icons/shield-check.svg" alt="" aria-hidden="true"></div><span class="eyebrow">SECURE ACCESS</span><h1>한 번 더 확인하고,<br>안전하게 시작하세요.</h1><p>등록된 연락처로 전달된 인증코드를 입력하면 ezREMS 서비스로 안전하게 연결됩니다.</p></div>
+<div class="security-copy"><div class="icon-shell"><img src="./images/icons/shield-check.svg" alt="" aria-hidden="true"></div><span class="eyebrow">SECURE ACCESS</span><h1 id="securityTitle">한 번 더 확인하고,<br>안전하게 시작하세요.</h1><p id="securityDescription">등록된 연락처로 전달된 인증코드를 입력하면 ezREMS 서비스로 안전하게 연결됩니다.</p></div>
 <div class="security-points"><span>6자리 일회용 코드</span><span>3분 유효시간</span><span>암호화된 인증</span></div>
 </aside>
 <section class="auth-side">
 <form class="auth-card" id="authForm" novalidate>
 <div class="auth-nav">
 <button class="back" type="button" id="back">← 로그인 화면으로 돌아가기</button>
-<span class="step">로그인 2단계</span>
+<span class="step" id="flowStep">로그인 2단계</span>
 </div>
-<h2>2차 인증</h2>
-<p class="lead">계정 보호를 위해 전송된 6자리 인증코드를 입력해 주세요.</p>
+<h2 id="authTitle">2차 인증</h2>
+<p class="lead" id="authLead">계정 보호를 위해 전송된 6자리 인증코드를 입력해 주세요.</p>
 <div class="destination" id="destination">이메일 <b>ji***@zeons.co.kr</b>로 인증코드를 보냈습니다.</div>
 <div class="method-tabs" role="tablist" aria-label="인증 방법">
 <button type="button" role="tab" data-method="sms" aria-selected="false">SMS</button>
@@ -46,7 +46,7 @@
 <p class="message" id="message" role="alert"></p>
 <button class="verify" id="verify" type="submit" disabled>인증 확인</button>
 <div class="resend-row"><span>코드를 받지 못하셨나요?</span><button class="resend" id="resend" type="button">인증코드 재발송</button></div>
-<p class="help">인증 시간이 만료되면 코드를 다시 요청할 수 있습니다. 본인이 요청하지 않은 로그인이라면 창을 닫고 관리자에게 문의해 주세요.</p>
+<p class="help" id="authHelp">인증 시간이 만료되면 코드를 다시 요청할 수 있습니다. 본인이 요청하지 않은 로그인이라면 창을 닫고 관리자에게 문의해 주세요.</p>
 </form>
 </section>
 </section>
@@ -55,15 +55,18 @@
 <script>
 (function(){
 const fields=[...document.querySelectorAll('#codeFields input')],verify=document.querySelector('#verify'),message=document.querySelector('#message'),timer=document.querySelector('#timer'),resend=document.querySelector('#resend'),destination=document.querySelector('#destination'),toast=document.querySelector('#toast');
+const params=new URLSearchParams(location.search),isPasswordReset=params.get('flow')==='password-reset',requestedEmail=params.get('email')||'';
+const maskEmail=value=>{const parts=String(value).split('@');if(parts.length!==2)return 'ji***@zeons.co.kr';const local=parts[0],visible=local.slice(0,Math.min(2,local.length));return visible+'***@'+parts[1]};
+if(isPasswordReset){document.title='ezREMS 비밀번호 초기화 2차 인증';document.querySelector('#flowStep').textContent='비밀번호 초기화 2단계';document.querySelector('#authTitle').textContent='비밀번호 초기화 2차 인증';document.querySelector('#authLead').textContent='본인 확인을 위해 전송된 6자리 인증코드를 입력해 주세요.';document.querySelector('#securityTitle').innerHTML='본인 확인 후,<br>안전하게 초기화하세요.';document.querySelector('#securityDescription').textContent='2차 인증이 완료되면 등록된 이메일로 임시 비밀번호를 발송합니다.';document.querySelector('#authHelp').textContent='인증 시간이 만료되면 코드를 다시 요청할 수 있습니다. 본인이 요청하지 않은 초기화라면 창을 닫고 관리자에게 문의해 주세요.';destination.innerHTML='이메일 <b>'+maskEmail(requestedEmail)+'</b>로 인증코드를 보냈습니다.'}
 let remaining=180,tick=null,method='email';
 function code(){return fields.map(function(field){return field.value}).join('')}
 function update(){verify.disabled=code().length!==6||remaining<=0;fields.forEach(function(field){field.classList.remove('invalid')});if(message.textContent&&remaining>0)message.textContent=''}
 function startTimer(){clearInterval(tick);remaining=180;resend.disabled=true;timer.textContent='03:00';tick=setInterval(function(){remaining-=1;const minute=String(Math.floor(remaining/60)).padStart(2,'0'),second=String(remaining%60).padStart(2,'0');timer.textContent=minute+':'+second;if(remaining<=0){clearInterval(tick);timer.textContent='00:00';verify.disabled=true;resend.disabled=false;message.textContent='인증 시간이 만료되었습니다. 인증코드를 다시 요청해 주세요.'}},1000)}
 fields.forEach(function(field,index){field.addEventListener('input',function(){field.value=field.value.replace(/\D/g,'').slice(-1);if(field.value&&index<fields.length-1)fields[index+1].focus();update()});field.addEventListener('keydown',function(event){if(event.key==='Backspace'&&!field.value&&index>0)fields[index-1].focus();if(event.key==='ArrowLeft'&&index>0)fields[index-1].focus();if(event.key==='ArrowRight'&&index<fields.length-1)fields[index+1].focus()});field.addEventListener('paste',function(event){const value=(event.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);if(!value)return;event.preventDefault();fields.forEach(function(item,i){item.value=value[i]||''});fields[Math.min(value.length,6)-1].focus();update()})});
-document.querySelectorAll('[data-method]').forEach(function(button){button.addEventListener('click',function(){method=button.dataset.method;document.querySelectorAll('[data-method]').forEach(function(item){const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active))});destination.innerHTML=method==='email'?'이메일 <b>ji***@zeons.co.kr</b>로 인증코드를 보냈습니다.':'휴대전화 <b>010-****-4821</b>로 인증코드를 보냈습니다.';fields.forEach(function(field){field.value=''});fields[0].focus();message.textContent='';startTimer();update()})});
-document.querySelector('#authForm').addEventListener('submit',function(event){event.preventDefault();if(code().length!==6){message.textContent='6자리 인증코드를 모두 입력해 주세요.';fields.forEach(function(field){field.classList.add('invalid')});fields[0].focus();return}verify.disabled=true;verify.textContent='인증 확인 중…';setTimeout(function(){verify.textContent='인증 확인';verify.disabled=false;toast.textContent='인증이 완료되었습니다. ezREMS로 이동합니다.';toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},2600)},700)});
+document.querySelectorAll('[data-method]').forEach(function(button){button.addEventListener('click',function(){method=button.dataset.method;document.querySelectorAll('[data-method]').forEach(function(item){const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active))});destination.innerHTML=method==='email'?'이메일 <b>'+(isPasswordReset?maskEmail(requestedEmail):'ji***@zeons.co.kr')+'</b>로 인증코드를 보냈습니다.':'휴대전화 <b>010-****-4821</b>로 인증코드를 보냈습니다.';fields.forEach(function(field){field.value=''});fields[0].focus();message.textContent='';startTimer();update()})});
+document.querySelector('#authForm').addEventListener('submit',function(event){event.preventDefault();if(code().length!==6){message.textContent='6자리 인증코드를 모두 입력해 주세요.';fields.forEach(function(field){field.classList.add('invalid')});fields[0].focus();return}verify.disabled=true;verify.textContent='인증 확인 중…';setTimeout(function(){if(isPasswordReset){location.href='./password-reset-complete.html'}else{toast.textContent='인증이 완료되었습니다. ezREMS로 이동합니다.';toast.classList.add('show');setTimeout(function(){location.href='./index.html'},700)}},700)});
 resend.addEventListener('click',function(){fields.forEach(function(field){field.value=''});fields[0].focus();message.textContent='';startTimer();update();toast.textContent=(method==='email'?'이메일':'SMS')+' 인증코드를 다시 보냈습니다.';toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},2200)});
-document.querySelector('#back').addEventListener('click',function(){if(history.length>1)history.back();else location.href='./index.html'});
+document.querySelector('#back').addEventListener('click',function(){if(isPasswordReset)location.href='./index.html';else if(history.length>1)history.back();else location.href='./index.html'});
 startTimer();fields[0].focus();
 })();
 </script>

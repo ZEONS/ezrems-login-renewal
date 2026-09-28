@@ -77,11 +77,12 @@
             username.focus();
             return;
         }
-        // Wire the authentication service here when its reset API is available.
-        // Never claim that a code was delivered without a successful server response.
-        status.textContent = findingId
-            ? '현재 아이디 이메일 발송 기능은 준비 중입니다. 고객센터 070-8811-8881로 문의해 주세요.'
-            : '현재 인증코드 발송 기능은 준비 중입니다. 고객센터 070-8811-8881로 문의해 주세요.';
-        status.hidden = false;
+        if (findingId) {
+            status.textContent = '현재 아이디 이메일 발송 기능은 준비 중입니다. 고객센터 070-8811-8881로 문의해 주세요.';
+            status.hidden = false;
+            return;
+        }
+        const params = new URLSearchParams({ flow: 'password-reset', email: username.value.trim() });
+        location.href = `./two-factor.html?${params.toString()}`;
     });
 })();
