@@ -1628,6 +1628,24 @@
             background: #f6dfe0
         }
 
+        .emergency-attachment {
+            display: inline-flex;
+            max-width: calc(100% - 12px);
+            align-items: center;
+            gap: 5px;
+            margin-top: 7px;
+            color: #a51f28;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            overflow-wrap: anywhere
+        }
+
+        .emergency-attachment[hidden] {
+            display: none
+        }
+
         .footer-left {
             display: flex;
             align-items: center;
@@ -1849,7 +1867,7 @@
                                     <path d="M12 9v5m0 3h.01" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" />
                                 </svg><b id="emergencyTitle">긴급 공지</b>
-                                <p id="emergencyMessage"></p><button class="emergency-close" id="emergencyClose"
+                                <p id="emergencyMessage"></p><a class="emergency-attachment" id="emergencyAttachment" target="_blank" rel="noopener noreferrer" hidden>📎 첨부파일 보기</a><button class="emergency-close" id="emergencyClose"
                                     type="button" aria-label="긴급 공지 닫기">×</button>
                             </aside>
                             <form id="form" novalidate>
@@ -2031,7 +2049,7 @@
         fontMenu.querySelectorAll('[data-font]').forEach(button => button.addEventListener('click', () => { applyFont(button.dataset.font); fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false'); fontButton.focus() }));
         document.addEventListener('click', event => { if (!event.target.closest('.font-picker')) { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } }); document.addEventListener('keydown', event => { if (event.key === 'Escape') { fontMenu.classList.remove('show'); fontButton.setAttribute('aria-expanded', 'false') } });
         }
-        const emergencyTest = document.querySelector('#emergencyTest'), emergencyNotice = document.querySelector('#emergencyNotice'), emergencyClose = document.querySelector('#emergencyClose'), emergencyTitle = document.querySelector('#emergencyTitle'), emergencyMessage = document.querySelector('#emergencyMessage'); let emergencyData = null; const setEmergencyVisible = visible => { emergencyNotice.hidden = !visible; emergencyTest.setAttribute('aria-expanded', String(visible)); emergencyTest.textContent = visible ? '긴급공지 숨기기' : '긴급공지 테스트' }; const renderEmergency = data => { if (!data || !data.message) return false; emergencyData = data; emergencyTitle.textContent = [data.label, data.title].filter(Boolean).join(' · '); emergencyMessage.textContent = data.message; setEmergencyVisible(data.enabled === true); return true }; const loadEmergencyNotice = async () => { try { const response = await fetch(`${CONTENT_BASE}/emergency-notice`, { cache: 'no-store' }); if (!response.ok) throw new Error('emergency notice unavailable'); const data = await response.json(); if (!renderEmergency(data)) throw new Error('emergency notice empty') } catch (error) { if (!renderEmergency(window.EZREMS_EMERGENCY_NOTICE_FALLBACK || null)) { emergencyTest.hidden = true; setEmergencyVisible(false) } } }; emergencyTest.addEventListener('click', () => { if (emergencyData) setEmergencyVisible(emergencyNotice.hidden) }); emergencyClose.addEventListener('click', () => { setEmergencyVisible(false); emergencyTest.focus() }); loadEmergencyNotice();
+        const emergencyTest = document.querySelector('#emergencyTest'), emergencyNotice = document.querySelector('#emergencyNotice'), emergencyClose = document.querySelector('#emergencyClose'), emergencyTitle = document.querySelector('#emergencyTitle'), emergencyMessage = document.querySelector('#emergencyMessage'), emergencyAttachment = document.querySelector('#emergencyAttachment'); let emergencyData = null; const setEmergencyVisible = visible => { emergencyNotice.hidden = !visible; emergencyTest.setAttribute('aria-expanded', String(visible)); emergencyTest.textContent = visible ? '긴급공지 숨기기' : '긴급공지 테스트' }; const renderEmergency = data => { if (!data || !data.message) return false; emergencyData = data; emergencyTitle.textContent = [data.label, data.title].filter(Boolean).join(' · '); emergencyMessage.textContent = data.message; const attachment = data.attachment?.path ? data.attachment : null; emergencyAttachment.hidden = !attachment; emergencyAttachment.removeAttribute('href'); if (attachment) { emergencyAttachment.href = contentAssetUrl(attachment.path); emergencyAttachment.textContent = `📎 ${attachment.name || '첨부파일 보기'}` } setEmergencyVisible(data.enabled === true); return true }; const loadEmergencyNotice = async () => { try { const response = await fetch(`${CONTENT_BASE}/emergency-notice`, { cache: 'no-store' }); if (!response.ok) throw new Error('emergency notice unavailable'); const data = await response.json(); if (!renderEmergency(data)) throw new Error('emergency notice empty') } catch (error) { if (!renderEmergency(window.EZREMS_EMERGENCY_NOTICE_FALLBACK || null)) { emergencyTest.hidden = true; setEmergencyVisible(false) } } }; emergencyTest.addEventListener('click', () => { if (emergencyData) setEmergencyVisible(emergencyNotice.hidden) }); emergencyClose.addEventListener('click', () => { setEmergencyVisible(false); emergencyTest.focus() }); loadEmergencyNotice();
         const clientTrack = document.querySelector('#clientTrack'), clientMarquee = clientTrack.closest('.marquee'), clientTooltip = document.createElement('div'); clientTooltip.className = 'client-floating-tooltip'; clientTooltip.setAttribute('role', 'tooltip'); document.body.appendChild(clientTooltip); let activeClientCard = null; const showClientTooltip = card => { const text = card?.dataset.clientTooltip; if (!text) return; activeClientCard = card; clientTooltip.textContent = text; clientTooltip.classList.add('show'); clientTooltip.classList.remove('below'); const cardRect = card.getBoundingClientRect(), tipRect = clientTooltip.getBoundingClientRect(), left = Math.max(tipRect.width / 2 + 10, Math.min(innerWidth - tipRect.width / 2 - 10, cardRect.left + cardRect.width / 2)); let top = cardRect.top - tipRect.height - 10; if (top < 8) { top = cardRect.bottom + 10; clientTooltip.classList.add('below') } clientTooltip.style.left = `${left}px`; clientTooltip.style.top = `${top}px` }; const hideClientTooltip = () => { activeClientCard = null; clientTooltip.classList.remove('show') }; clientTrack.addEventListener('pointerover', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('pointerout', event => { const from = event.target.closest('.client-card'), to = event.relatedTarget?.closest?.('.client-card'); if (from && from !== to) hideClientTooltip() }); clientTrack.addEventListener('focusin', event => { const card = event.target.closest('.client-card'); if (card) showClientTooltip(card) }); clientTrack.addEventListener('focusout', hideClientTooltip); addEventListener('scroll', () => { if (activeClientCard) showClientTooltip(activeClientCard) }, { passive: true });
         let clientDragPointer = null, clientDragStartX = 0, clientDragStartOffset = 0, clientDragOffset = 0;
         const normalizeClientDragOffset = value => { const group = clientTrack.querySelector('.marquee-group'), width = group?.getBoundingClientRect().width || 0; if (!width) return value; return ((value % width) + width) % width - width };
